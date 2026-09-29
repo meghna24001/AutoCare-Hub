@@ -68,9 +68,9 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
     return true;
   });
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (deletingVehicle) {
-      const res = deleteVehicle(deletingVehicle.vehicleID);
+      const res = await deleteVehicle(deletingVehicle.vehicleID);
       if (!res.success) {
         alert(res.message);
       }
@@ -373,9 +373,9 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
         onClose={() => setEditingVehicle(null)}
         customers={customers}
         initialData={editingVehicle}
-        onSubmit={data => {
+        onSubmit={async data => {
           if (!editingVehicle) return { success: false, message: 'No vehicle' };
-          return updateVehicle(editingVehicle.vehicleID, data);
+          return await updateVehicle(editingVehicle.vehicleID, data);
         }}
       />
 

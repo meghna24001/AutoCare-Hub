@@ -17,7 +17,7 @@ interface ServiceJobFormModalProps {
   customers: Customer[];
   vehicles: Vehicle[];
   mechanics: Mechanic[];
-  onSubmit: (data: Omit<ServiceJob, 'serviceID' | 'totalBillAmount'> & { serviceID?: number }) => { success: boolean; message: string };
+  onSubmit: (data: Omit<ServiceJob, 'serviceID' | 'totalBillAmount'> & { serviceID?: number }) => Promise<{ success: boolean; message: string }> | { success: boolean; message: string };
   initialData?: ServiceJob | null;
   preselectedCustomerId?: number;
   preselectedVehicleId?: number;
@@ -124,7 +124,7 @@ export const ServiceJobFormModal: React.FC<ServiceJobFormModalProps> = ({
   const estimatedTax = Math.round(netAmount * 0.18); // 18% GST preview
   const grandTotal = netAmount + estimatedTax;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -155,7 +155,7 @@ export const ServiceJobFormModal: React.FC<ServiceJobFormModalProps> = ({
       return;
     }
 
-    const res = onSubmit({
+    const res = await onSubmit({
       serviceID: initialData?.serviceID,
       customerID: parseInt(customerID, 10),
       vehicleID: parseInt(vehicleID, 10),

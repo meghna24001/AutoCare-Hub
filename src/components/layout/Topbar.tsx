@@ -28,7 +28,7 @@ export const Topbar: React.FC<TopbarProps> = ({
   onOpenNewVehicle,
   onOpenRecordPayment,
 }) => {
-  const { notifications, bays, setIsGlobalSearchOpen, setActiveTab } = useWorkshop();
+  const { notifications, bays, setIsGlobalSearchOpen, setActiveTab, isBackendOnline } = useWorkshop();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
 
@@ -49,14 +49,18 @@ export const Topbar: React.FC<TopbarProps> = ({
 
         {/* Workshop status pill */}
         <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full border border-slate-200 text-xs text-slate-700">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="font-semibold text-slate-900">Apex Motors Hub</span>
+          <span className={`w-2 h-2 rounded-full ${isBackendOnline ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+          <span className="font-semibold text-slate-900">AutoCare Hub</span>
           <span className="text-slate-400">•</span>
           <span
             onClick={() => setActiveTab('bays')}
             className="hover:text-sky-600 cursor-pointer font-medium"
           >
-            Bays: {occupiedBays}/{bays.length} Occupied
+            Bays: {occupiedBays}/{bays.length}
+          </span>
+          <span className="text-slate-400">•</span>
+          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${isBackendOnline ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+            {isBackendOnline ? 'SQLite Live' : 'Offline Cache'}
           </span>
         </div>
       </div>

@@ -60,9 +60,9 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
     return true;
   });
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (deletingCustomer) {
-      const res = deleteCustomer(deletingCustomer.customerID);
+      const res = await deleteCustomer(deletingCustomer.customerID);
       if (!res.success) {
         alert(res.message);
       }
@@ -266,9 +266,9 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
         isOpen={!!editingCustomer}
         onClose={() => setEditingCustomer(null)}
         initialData={editingCustomer}
-        onSubmit={data => {
+        onSubmit={async data => {
           if (!editingCustomer) return { success: false, message: 'No customer' };
-          return updateCustomer(editingCustomer.customerID, data);
+          return await updateCustomer(editingCustomer.customerID, data);
         }}
       />
 

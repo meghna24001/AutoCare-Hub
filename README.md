@@ -101,19 +101,66 @@ This project preserves the fundamental data structures and business integrity ch
    npm install
    ```
 
-3. **Start the development server:**
+3. **Run Full-Stack (Backend + Frontend together):**
    ```bash
+   npm run dev:all
+   ```
+   *(Launches Express SQLite API at `http://localhost:5000` and Vite Frontend at `http://localhost:3000` concurrently)*.
+
+4. **Or run components individually:**
+   ```bash
+   # Start backend API server only
+   npm run server
+
+   # Start frontend only
    npm run dev
    ```
 
-4. **Open in browser:**
+5. **Open in browser:**
    Navigate to `http://localhost:3000` to launch the application.
 
-5. **Build for production:**
+6. **Build for production:**
    ```bash
    npm run build
    ```
-   *(Generates optimized static assets in the `dist/` directory)*.
+   *(Compiles TypeScript and generates optimized static assets in the `dist/` directory)*.
+
+---
+
+## 🛠️ Backend Architecture (100% Free / Zero-Cost)
+
+The backend provides a high-performance RESTful API powered by **Node.js, Express, and SQLite**:
+
+- **Database**: Local embedded file at `server/data/autocare.db` (auto-seeded on initial boot). No monthly bills, no credit cards, zero cloud hosting fees.
+- **Data Integrity**: Enforces foreign key constraints and C++ rules directly in database queries and route controllers.
+- **Seamless Resilience**: Frontend features graceful fallback — if the backend is offline, the app switches to local cache automatically without crashing.
+
+### REST API Endpoints
+
+| Resource | Method | Endpoint | Description |
+|---|---|---|---|
+| **System** | `GET` | `/api/health` | Service health, uptime, and database status |
+| **Customers** | `GET` | `/api/customers` | List all customers with vehicle count & total spend |
+| | `POST` | `/api/customers` | Register customer with 10-digit mobile validation |
+| | `PUT` | `/api/customers/:id` | Update customer contact profile |
+| | `DELETE`| `/api/customers/:id` | Delete customer (safe integrity check) |
+| **Vehicles** | `GET` | `/api/vehicles` | List vehicles with owner info and service stats |
+| | `GET` | `/api/vehicles/:id` | Search by ID or Indian license plate (`MH 02 AB 1234`) |
+| | `POST` | `/api/vehicles` | Register vehicle linked to customer |
+| | `PUT` | `/api/vehicles/:id` | Update vehicle specifications |
+| | `DELETE`| `/api/vehicles/:id` | Delete vehicle (prevents delete if active job) |
+| **Services** | `GET` | `/api/services` | List service work orders with filters |
+| | `POST` | `/api/services` | Create service job + **auto-generates Tax Invoice** |
+| | `PATCH`| `/api/services/:id/status` | Advance 8-stage workshop pipeline |
+| | `PUT` | `/api/services/:id` | Update job details, recalculates billing |
+| **Mechanics** | `GET` | `/api/mechanics` | Technician list with live active workload count |
+| **Bays** | `GET` | `/api/bays` | Real-time status of Hoist Bays 1–8 |
+| | `PATCH`| `/api/bays/:id` | Assign / release vehicle and technician |
+| **Invoices** | `GET` | `/api/invoices` | List invoices with customer and vehicle details |
+| | `POST` | `/api/invoices/:num/pay` | Record payment (Cash, UPI, Card, Net Banking) |
+| | `GET` | `/api/invoices/:num/payment-links`| Free NPCI UPI URI & WhatsApp link generator |
+| **Reports** | `GET` | `/api/reports/kpis` | Real-time workshop analytics & revenue figures |
+| | `GET` | `/api/reports/backup` | Full JSON database dump (C++ file backup equivalent)|
 
 ---
 
@@ -122,20 +169,35 @@ This project preserves the fundamental data structures and business integrity ch
 ```
 ├── main.cpp                         # Original C++ console system source code
 ├── package.json                     # Node dependencies & project scripts
-├── vite.config.ts                  # Vite build and dev server configuration
-├── tsconfig.json                   # Strict TypeScript compiler rules
+├── vite.config.ts                  # Vite build, dev server & /api proxy configuration
+├── tsconfig.json                   # Strict TypeScript compiler rules (frontend)
+├── tsconfig.server.json            # TypeScript configuration (backend server)
 ├── tailwind.config.js               # Automotive styling theme extensions
 ├── index.html                       # HTML5 entry with Inter & JetBrains Mono typography
+├── server/
+│   ├── index.ts                     # Express server entry point (port 5000)
+│   ├── db/
+│   │   ├── database.ts              # SQLite database connection & query helpers
+│   │   ├── schema.sql               # Relational SQL schema with foreign key constraints
+│   │   └── seed.ts                  # Initial Indian workshop seed dataset
+│   └── routes/
+│       ├── customerRoutes.ts        # Customer CRUD & spend metrics
+│       ├── vehicleRoutes.ts         # Vehicle CRUD & plate search
+│       ├── serviceRoutes.ts         # Service orders & C++ ownership validation
+│       ├── mechanicRoutes.ts        # Technician workload queue
+│       ├── bayRoutes.ts             # Hoist Bays 1–8 occupancy
+│       ├── invoiceRoutes.ts         # Billing, payments & UPI links
+│       └── reportRoutes.ts          # KPI aggregates & JSON backup/restore
 └── src/
-    ├── types/                       # TypeScript interfaces (Customer, Vehicle, ServiceJob, Mechanic, Invoice)
+    ├── types/                       # TypeScript interfaces (Customer, Vehicle, ServiceJob, etc.)
     ├── data/mockData.ts             # Realistic Indian automotive service demo data
-    ├── context/WorkshopContext.tsx  # Central state store with local persistence & C++ validation rules
-    ├── services/dataService.ts      # API abstraction layer and JSON database export tool
+    ├── context/WorkshopContext.tsx  # Central state store with real-time API sync & offline fallback
+    ├── services/dataService.ts      # REST API client & local JSON exporter
     ├── utils/                       # Formatting (₹ INR, plates, dates) & validator functions
     └── components/
-        ├── layout/                  # Sidebar, Topbar, and Notifications Drawer
+        ├── layout/                  # Sidebar, Topbar (with DB status indicator), Notifications
         ├── common/                  # Modals, ConfirmDialog, StatCards, StatusBadges, Global Search
-        ├── dashboard/               # KPIs, Ready-for-pickup lane, Today's jobs table, Revenue charts
+        ├── dashboard/               # KPIs, Ready-for-pickup lane, Today's jobs, Revenue charts
         ├── customers/               # Customer directory, Profile drawer, and Creation modal
         ├── vehicles/                # Vehicle fleet table, Card grid, and History timeline drawer
         ├── services/                # Work order tables, Kanban pipeline, and Creation wizard
@@ -143,7 +205,7 @@ This project preserves the fundamental data structures and business integrity ch
         ├── history/                 # Chronological service history explorer
         ├── billing/                 # Invoice table, Printable Tax Invoice modal, Payment modal
         ├── workshop/                # Live workshop bay hoists (Bays 1 - 8)
-        ├── reports/                 # Financial analytics, fleet brand distribution, and leaderboards
+        ├── reports/                 # Financial analytics, fleet brand distribution, leaderboards
         └── settings/                # Service centre profile and JSON snapshot export
 ```
 

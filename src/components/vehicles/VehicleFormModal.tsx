@@ -8,7 +8,7 @@ interface VehicleFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   customers: Customer[];
-  onSubmit: (data: Omit<Vehicle, 'vehicleID'> & { vehicleID?: number }) => { success: boolean; message: string };
+  onSubmit: (data: Omit<Vehicle, 'vehicleID'> & { vehicleID?: number }) => Promise<{ success: boolean; message: string }> | { success: boolean; message: string };
   initialData?: Vehicle | null;
   preselectedCustomerId?: number;
   onAddNewCustomer?: () => void;
@@ -71,7 +71,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
     setError('');
   }, [initialData, preselectedCustomerId, isOpen, customers]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -91,7 +91,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
       return;
     }
 
-    const res = onSubmit({
+    const res = await onSubmit({
       vehicleID: vehicleID ? parseInt(vehicleID, 10) : undefined,
       customerID: parseInt(customerID, 10),
       registrationNumber: cleanPlate,

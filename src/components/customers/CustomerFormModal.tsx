@@ -7,7 +7,7 @@ import { isValidMobileNumber } from '../../utils/validators';
 interface CustomerFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: Omit<Customer, 'customerID'> & { customerID?: number }) => { success: boolean; message: string };
+  onSubmit: (data: Omit<Customer, 'customerID'> & { customerID?: number }) => Promise<{ success: boolean; message: string }> | { success: boolean; message: string };
   initialData?: Customer | null;
 }
 
@@ -41,7 +41,7 @@ export const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
     setError('');
   }, [initialData, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -55,7 +55,7 @@ export const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
       return;
     }
 
-    const res = onSubmit({
+    const res = await onSubmit({
       customerID: customerID ? parseInt(customerID, 10) : undefined,
       customerName: customerName.trim(),
       mobileNumber: mobileNumber.trim(),

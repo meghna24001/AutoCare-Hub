@@ -438,9 +438,9 @@ export const ServiceJobTable: React.FC<ServiceJobTableProps> = ({
         vehicles={vehicles}
         mechanics={mechanics}
         initialData={editingService}
-        onSubmit={data => {
+        onSubmit={async data => {
           if (!editingService) return { success: false, message: 'No service' };
-          return updateService(editingService.serviceID, data);
+          return await updateService(editingService.serviceID, data);
         }}
       />
 

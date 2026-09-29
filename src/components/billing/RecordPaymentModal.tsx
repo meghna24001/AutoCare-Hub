@@ -8,7 +8,7 @@ interface RecordPaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   invoice: Invoice | null;
-  onSubmit: (invoiceNumber: string, amount: number, method: Invoice['paymentMethod'], notes?: string) => { success: boolean; message: string };
+  onSubmit: (invoiceNumber: string, amount: number, method: Invoice['paymentMethod'], notes?: string) => Promise<{ success: boolean; message: string }> | { success: boolean; message: string };
 }
 
 export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
@@ -36,7 +36,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
 
   const balance = Math.max(0, invoice.totalAmount - invoice.paidAmount);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -50,7 +50,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
       return;
     }
 
-    const res = onSubmit(invoice.invoiceNumber, amount, method, notes);
+    const res = await onSubmit(invoice.invoiceNumber, amount, method, notes);
     if (!res.success) {
       setError(res.message);
     } else {
