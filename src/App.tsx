@@ -27,6 +27,7 @@ import { InvoiceViewModal } from './components/billing/InvoiceViewModal';
 import { RecordPaymentModal } from './components/billing/RecordPaymentModal';
 
 import { Customer, Vehicle, ServiceJob, Invoice } from './types';
+import { Wrench } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
   const {
@@ -40,10 +41,15 @@ const MainLayout: React.FC = () => {
     mechanics,
     invoices,
     addCustomer,
+    updateCustomer,
     addVehicle,
+    updateVehicle,
     addService,
+    updateService,
+    deleteService,
     updateServiceStatus,
     recordPayment,
+    isLoading,
   } = useWorkshop();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -61,6 +67,11 @@ const MainLayout: React.FC = () => {
   const [selectedService, setSelectedService] = useState<ServiceJob | null>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [payingInvoice, setPayingInvoice] = useState<Invoice | null>(null);
+
+  // Edit Modal States
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
+  const [editingService, setEditingService] = useState<ServiceJob | null>(null);
 
   // Global Keyboard Shortcut: Cmd/Ctrl + K opens search
   useEffect(() => {
@@ -116,6 +127,18 @@ const MainLayout: React.FC = () => {
     const inv = invoices.find(i => i.invoiceNumber === num);
     if (inv) setSelectedInvoice(inv);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-sky-500/20 mb-4 animate-pulse">
+          <Wrench className="w-8 h-8 text-white animate-spin" style={{ animationDuration: '3s' }} />
+        </div>
+        <h2 className="text-xl font-bold tracking-tight">AutoCare Hub</h2>
+        <p className="text-sm text-slate-400 mt-1">Connecting to SQLite database...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col antialiased">
@@ -269,7 +292,10 @@ const MainLayout: React.FC = () => {
         onAddJob={handleOpenNewJob}
         onSelectVehicle={handleSelectVehicleById}
         onSelectJob={handleSelectServiceById}
-        onEditCustomer={() => {}}
+        onEditCustomer={cust => {
+          setSelectedCustomer(null);
+          setEditingCustomer(cust);
+        }}
       />
 
       <VehicleDetailModal
@@ -281,7 +307,10 @@ const MainLayout: React.FC = () => {
         onAddJob={handleOpenNewJob}
         onSelectJob={handleSelectServiceById}
         onSelectCustomer={handleSelectCustomerById}
-        onEditVehicle={() => {}}
+        onEditVehicle={veh => {
+          setSelectedVehicle(null);
+          setEditingVehicle(veh);
+        }}
       />
 
       <ServiceDetailModal
@@ -293,9 +322,65 @@ const MainLayout: React.FC = () => {
         mechanic={mechanics.find(m => m.mechanicID === selectedService?.mechanicID) || null}
         onUpdateStatus={updateServiceStatus}
         onViewInvoice={handleViewInvoiceForService}
-        onEditService={() => {}}
-        onDeleteService={() => {}}
+        onEditService={job => {
+          setSelectedService(null);
+          setEditingService(job);
+        }}
+        onDeleteService={async job => {
+          if (window.confirm(`Delete service job #${job.serviceID}?`)) {
+            const res = await deleteService(job.serviceID);
+            if (!res.success) {
+              alert(res.message);
+            } else {
+              setSelectedService(null);
+            }
+          }
+        }}
       />
+
+      {/* Edit Record Modals */}
+      {editingCustomer && (
+        <CustomerFormModal
+          isOpen={!!editingCustomer}
+          onClose={() => setEditingCustomer(null)}
+          initialData={editingCustomer}
+          onSubmit={async data => {
+            const res = await updateCustomer(editingCustomer.customerID, data);
+            if (res.success) setEditingCustomer(null);
+            return res;
+          }}
+        />
+      )}
+
+      {editingVehicle && (
+        <VehicleFormModal
+          isOpen={!!editingVehicle}
+          onClose={() => setEditingVehicle(null)}
+          customers={customers}
+          initialData={editingVehicle}
+          onSubmit={async data => {
+            const res = await updateVehicle(editingVehicle.vehicleID, data);
+            if (res.success) setEditingVehicle(null);
+            return res;
+          }}
+        />
+      )}
+
+      {editingService && (
+        <ServiceJobFormModal
+          isOpen={!!editingService}
+          onClose={() => setEditingService(null)}
+          customers={customers}
+          vehicles={vehicles}
+          mechanics={mechanics}
+          initialData={editingService}
+          onSubmit={async data => {
+            const res = await updateService(editingService.serviceID, data);
+            if (res.success) setEditingService(null);
+            return res;
+          }}
+        />
+      )}
 
       <InvoiceViewModal
         isOpen={!!selectedInvoice}

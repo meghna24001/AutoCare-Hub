@@ -9,6 +9,7 @@ import { ServiceJob } from '../../types';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { StatusBadge } from '../common/StatusBadge';
 import { ServiceDetailModal } from '../services/ServiceDetailModal';
+import { ServiceJobFormModal } from '../services/ServiceJobFormModal';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 
 interface ServiceHistoryViewProps {
@@ -22,7 +23,7 @@ export const ServiceHistoryView: React.FC<ServiceHistoryViewProps> = ({
   onSelectCustomer,
   onSelectVehicle,
 }) => {
-  const { services, vehicles, customers, mechanics, updateServiceStatus, deleteService } = useWorkshop();
+  const { services, vehicles, customers, mechanics, updateService, updateServiceStatus, deleteService } = useWorkshop();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMechanic, setSelectedMechanic] = useState<string>('all');
@@ -30,6 +31,7 @@ export const ServiceHistoryView: React.FC<ServiceHistoryViewProps> = ({
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
   const [viewingService, setViewingService] = useState<ServiceJob | null>(null);
+  const [editingService, setEditingService] = useState<ServiceJob | null>(null);
   const [deletingService, setDeletingService] = useState<ServiceJob | null>(null);
 
   // Sorting & Filtering logic preserving C++ dateValue sorting
@@ -271,16 +273,41 @@ export const ServiceHistoryView: React.FC<ServiceHistoryViewProps> = ({
         mechanic={mechanics.find(m => m.mechanicID === viewingService?.mechanicID) || null}
         onUpdateStatus={updateServiceStatus}
         onViewInvoice={onViewInvoice}
-        onEditService={() => {}}
+        onEditService={s => {
+          setViewingService(null);
+          setEditingService(s);
+        }}
         onDeleteService={s => setDeletingService(s)}
       />
+
+      {/* Edit Service Job Modal */}
+      {editingService && (
+        <ServiceJobFormModal
+          isOpen={!!editingService}
+          onClose={() => setEditingService(null)}
+          customers={customers}
+          vehicles={vehicles}
+          mechanics={mechanics}
+          initialData={editingService}
+          onSubmit={async data => {
+            const res = await updateService(editingService.serviceID, data);
+            if (res.success) setEditingService(null);
+            return res;
+          }}
+        />
+      )}
 
       {/* Confirm Delete */}
       <ConfirmDialog
         isOpen={!!deletingService}
         onClose={() => setDeletingService(null)}
-        onConfirm={() => {
-          if (deletingService) deleteService(deletingService.serviceID);
+        onConfirm={async () => {
+          if (deletingService) {
+            const res = await deleteService(deletingService.serviceID);
+            if (!res.success) {
+              alert(res.message);
+            }
+          }
           setDeletingService(null);
         }}
         title="Delete Service Record"
