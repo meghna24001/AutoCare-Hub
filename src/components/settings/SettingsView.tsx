@@ -13,6 +13,8 @@ export const SettingsView: React.FC = () => {
   const { customers, vehicles, services, mechanics, invoices, resetToDemoData } = useWorkshop();
 
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
 
   const handleExport = () => {
     apiService.exportDatabaseJSON({
@@ -22,8 +24,20 @@ export const SettingsView: React.FC = () => {
       mechanics,
       invoices,
     });
+    setSuccessMessage('Complete workshop database exported successfully as JSON snapshot!');
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
+  };
+
+  const handleReset = async () => {
+    if (window.confirm('Reset all records back to clean demo data? This will restore original customers, vehicles, and services.')) {
+      setIsResetting(true);
+      await resetToDemoData();
+      setIsResetting(false);
+      setSuccessMessage('Workshop records successfully restored to initial demo state!');
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3500);
+    }
   };
 
   return (
@@ -39,7 +53,7 @@ export const SettingsView: React.FC = () => {
       {savedSuccess && (
         <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 text-xs text-emerald-800 font-semibold animate-in fade-in">
           <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          <span>Complete workshop database exported successfully as JSON snapshot!</span>
+          <span>{successMessage}</span>
         </div>
       )}
 
@@ -134,15 +148,12 @@ export const SettingsView: React.FC = () => {
           </button>
 
           <button
-            onClick={() => {
-              if (window.confirm('Reset all records back to clean demo data? This will overwrite local changes.')) {
-                resetToDemoData();
-              }
-            }}
-            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center gap-2"
+            onClick={handleReset}
+            disabled={isResetting}
+            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 disabled:opacity-50"
           >
-            <RotateCcw className="w-4 h-4" />
-            <span>Reset Demo Records</span>
+            <RotateCcw className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
+            <span>{isResetting ? 'Resetting Records...' : 'Reset Demo Records'}</span>
           </button>
         </div>
       </div>

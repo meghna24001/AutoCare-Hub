@@ -185,6 +185,16 @@ export const apiService = {
     return fetchJson<any>(`${API_BASE}/reports/kpis`);
   },
 
+  async fetchRevenueAnalytics(): Promise<{ byServiceType: any[]; byMonth: any[] }> {
+    return fetchJson<{ byServiceType: any[]; byMonth: any[] }>(`${API_BASE}/reports/revenue-analytics`);
+  },
+
+  async reseedDatabase(): Promise<void> {
+    await fetchJson(`${API_BASE}/reports/reseed`, {
+      method: 'POST',
+    });
+  },
+
   // Export / Backup data (Zero-cost client download snapshot)
   exportDatabaseJSON(data: {
     customers: Customer[];

@@ -16,9 +16,34 @@ export async function initializeAndSeedDatabase(): Promise<void> {
   const customerCount = await queryOne<{ count: number }>('SELECT COUNT(*) as count FROM customers');
 
   if (!customerCount || customerCount.count === 0) {
-    console.log('Seeding initial Indian workshop records into SQLite database...');
+    await seedInitialRecords();
+  }
+}
 
-    // 1. Seed Customers
+export async function forceReseedDatabase(): Promise<void> {
+  console.log('Force resetting database to clean demo records...');
+  // Ensure schema is fresh
+  const schemaPath = path.resolve(__dirname, 'schema.sql');
+  const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+  await executeScript(schemaSql);
+
+  await executeRun('PRAGMA foreign_keys = OFF');
+  await executeRun('DELETE FROM payments');
+  await executeRun('DELETE FROM invoices');
+  await executeRun('DELETE FROM service_jobs');
+  await executeRun('DELETE FROM service_bays');
+  await executeRun('DELETE FROM vehicles');
+  await executeRun('DELETE FROM customers');
+  await executeRun('DELETE FROM mechanics');
+  await executeRun('PRAGMA foreign_keys = ON');
+
+  await seedInitialRecords();
+}
+
+export async function seedInitialRecords(): Promise<void> {
+  console.log('Seeding initial Indian workshop records into SQLite database...');
+
+  // 1. Seed Customers
     const customers = [
       [101, 'Rahul Sharma', '402 Windsor Tower, Andheri West, Mumbai, MH 400053', '9820145678', 'rahul.sharma@gmail.com', '2025-11-10'],
       [102, 'Priya Mukherjee', '14B Salt Lake Sector V, Bidhannagar, Kolkata, WB 700091', '9830219876', 'priya.m@outlook.com', '2025-12-04'],
@@ -193,5 +218,4 @@ export async function initializeAndSeedDatabase(): Promise<void> {
     }
 
     console.log('Database seeded successfully with initial records.');
-  }
 }

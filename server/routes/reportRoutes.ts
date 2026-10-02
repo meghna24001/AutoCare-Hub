@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { queryAll, queryOne, executeRun } from '../db/database.js';
+import { forceReseedDatabase } from '../db/seed.js';
 
 export const reportRouter = Router();
 
@@ -212,6 +213,16 @@ reportRouter.post('/restore', async (req: Request, res: Response) => {
     }
 
     res.json({ success: true, message: 'Database restored successfully from backup.' });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST reseed database back to pristine demo state
+reportRouter.post('/reseed', async (req: Request, res: Response) => {
+  try {
+    await forceReseedDatabase();
+    res.json({ success: true, message: 'Database reset to demo state successfully.' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
   }

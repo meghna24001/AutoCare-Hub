@@ -82,7 +82,7 @@ interface WorkshopContextType {
   getCustomerServices: (customerId: number) => ServiceJob[];
 
   // Persistence
-  resetToDemoData: () => void;
+  resetToDemoData: () => Promise<void>;
 }
 
 const WorkshopContext = createContext<WorkshopContextType | undefined>(undefined);
@@ -283,18 +283,6 @@ export const WorkshopProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const getVehicleServices = (vehicleId: number) => services.filter(s => s.vehicleID === vehicleId);
   const getCustomerServices = (customerId: number) => services.filter(s => s.customerID === customerId);
 
-  // ── Reset ────────────────────────────────────────────────────────────────
-  const resetToDemoData = () => {
-    setCustomers(initialCustomers);
-    setVehicles(initialVehicles);
-    setServices(initialServices);
-    setMechanics(initialMechanics);
-    setInvoices(initialInvoices);
-    setBays(initialServiceBays);
-    setNotifications(initialNotifications);
-    setActivities(initialActivities);
-    localStorage.clear();
-  };
 
   // ════════════════════════════════════════════════════════════════════════
   // CUSTOMER ACTIONS
@@ -602,6 +590,37 @@ export const WorkshopProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setBays(prev => prev.map(b => b.bayId === bayId ? { ...b, status, currentVehicleId: vehicleId, currentServiceId: serviceId, assignedMechanicId: mechanicId, occupiedSince: status === 'Occupied' ? 'Just now' : undefined } : b));
     if (isBackendOnline) {
       apiService.updateBayStatus(bayId, status, vehicleId, serviceId, mechanicId).catch(() => {/* best-effort */});
+    }
+  };
+
+  const resetToDemoData = async () => {
+    setIsLoading(true);
+    try {
+      if (isBackendOnline) {
+        await apiService.reseedDatabase();
+        await refreshData();
+      } else {
+        localStorage.removeItem(`${STORAGE_KEY}_customers`);
+        localStorage.removeItem(`${STORAGE_KEY}_vehicles`);
+        localStorage.removeItem(`${STORAGE_KEY}_services`);
+        localStorage.removeItem(`${STORAGE_KEY}_mechanics`);
+        localStorage.removeItem(`${STORAGE_KEY}_invoices`);
+        localStorage.removeItem(`${STORAGE_KEY}_bays`);
+        setCustomers(initialCustomers);
+        setVehicles(initialVehicles);
+        setServices(initialServices);
+        setMechanics(initialMechanics);
+        setInvoices(initialInvoices);
+        setBays(initialServiceBays);
+      }
+      setNotifications(initialNotifications);
+      setActivities(initialActivities);
+      localStorage.removeItem(`${STORAGE_KEY}_notifications`);
+      localStorage.removeItem(`${STORAGE_KEY}_activities`);
+    } catch (err) {
+      console.error('Failed to reset demo data:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 

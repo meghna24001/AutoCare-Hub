@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   TrendingUp,
   Car,
@@ -11,11 +11,46 @@ export const WorkshopReportsView: React.FC = () => {
   const { services, vehicles, mechanics } = useWorkshop();
   const [timeframe, setTimeframe] = useState<'today' | 'week' | 'month' | 'year'>('month');
 
+  // Filter services by selected timeframe
+  const filteredServices = useMemo(() => {
+    if (!services.length) return [];
+
+    const now = new Date();
+    const hasToday = services.some(s => {
+      if (!s.serviceDate) return false;
+      const d = new Date(s.serviceDate);
+      return d.toDateString() === now.toDateString();
+    });
+
+    const refDate = hasToday
+      ? now
+      : services.reduce((latest, s) => {
+          if (!s.serviceDate) return latest;
+          const d = new Date(s.serviceDate);
+          return !isNaN(d.getTime()) && d > latest ? d : latest;
+        }, new Date(services[0].serviceDate || now));
+
+    return services.filter(s => {
+      if (!s.serviceDate) return true;
+      const jobDate = new Date(s.serviceDate);
+      if (isNaN(jobDate.getTime())) return true;
+
+      const diffMs = Math.abs(refDate.getTime() - jobDate.getTime());
+      const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+      if (timeframe === 'today') return diffDays <= 1;
+      if (timeframe === 'week') return diffDays <= 7;
+      if (timeframe === 'month') return diffDays <= 30;
+      if (timeframe === 'year') return diffDays <= 365;
+      return true;
+    });
+  }, [services, timeframe]);
+
   // Aggregated figures
-  const totalLabour = services.reduce((acc, s) => acc + (s.labourCharges || 0), 0);
-  const totalParts = services.reduce((acc, s) => acc + (s.sparePartsCost || 0), 0);
+  const totalLabour = filteredServices.reduce((acc, s) => acc + (s.labourCharges || 0), 0);
+  const totalParts = filteredServices.reduce((acc, s) => acc + (s.sparePartsCost || 0), 0);
   const totalGrossRevenue = totalLabour + totalParts;
-  const avgJobValue = services.length > 0 ? Math.round(totalGrossRevenue / services.length) : 0;
+  const avgJobValue = filteredServices.length > 0 ? Math.round(totalGrossRevenue / filteredServices.length) : 0;
 
   // Manufacturer fleet distribution
   const manufacturerCounts: Record<string, number> = {};
@@ -75,7 +110,7 @@ export const WorkshopReportsView: React.FC = () => {
             Average Repair Order (ARO)
           </span>
           <p className="text-2xl font-bold text-slate-900 font-mono">{formatCurrency(avgJobValue)}</p>
-          <span className="text-xs text-slate-500 mt-1 block">Across {services.length} recorded orders</span>
+          <span className="text-xs text-slate-500 mt-1 block">Across {filteredServices.length} recorded orders</span>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">

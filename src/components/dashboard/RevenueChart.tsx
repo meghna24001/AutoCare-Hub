@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useWorkshop } from '../../context/WorkshopContext';
 import { formatCurrency } from '../../utils/formatters';
 
@@ -15,14 +15,38 @@ export const RevenueChart: React.FC = () => {
   const partsPct = totalServicesAmount > 0 ? 100 - labourPct : 50;
 
   // Monthly breakdown data for visual bar chart (Last 6 months)
-  const monthlyData = [
-    { month: 'Apr', labour: 34000, parts: 42000 },
-    { month: 'May', labour: 41000, parts: 51000 },
-    { month: 'Jun', labour: 38500, parts: 49000 },
-    { month: 'Jul', labour: 49000, parts: 62000 },
-    { month: 'Aug', labour: 56000, parts: 71000 },
-    { month: 'Sep (MTD)', labour: totalLabour, parts: totalParts },
-  ];
+  const monthlyData = useMemo(() => {
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dynamicMonths: Record<string, { labour: number; parts: number }> = {};
+
+    services.forEach(s => {
+      if (!s.serviceDate) return;
+      const d = new Date(s.serviceDate);
+      if (isNaN(d.getTime())) return;
+      const mName = monthNames[d.getMonth()];
+      if (!dynamicMonths[mName]) {
+        dynamicMonths[mName] = { labour: 0, parts: 0 };
+      }
+      dynamicMonths[mName].labour += s.labourCharges || 0;
+      dynamicMonths[mName].parts += s.sparePartsCost || 0;
+    });
+
+    const baselineMonths = [
+      { month: 'Apr', labour: 34000, parts: 42000 },
+      { month: 'May', labour: 41000, parts: 51000 },
+      { month: 'Jun', labour: 38500, parts: 49000 },
+      { month: 'Jul', labour: 49000, parts: 62000 },
+      { month: 'Aug', labour: 56000, parts: 71000 },
+    ];
+
+    const currentMonth = {
+      month: 'Sep (Live)',
+      labour: dynamicMonths['Sep']?.labour || totalLabour,
+      parts: dynamicMonths['Sep']?.parts || totalParts,
+    };
+
+    return [...baselineMonths, currentMonth];
+  }, [services, totalLabour, totalParts]);
 
   const maxVal = Math.max(...monthlyData.map(d => d.labour + d.parts));
 
