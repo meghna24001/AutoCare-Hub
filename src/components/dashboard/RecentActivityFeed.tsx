@@ -8,17 +8,17 @@ export const RecentActivityFeed: React.FC = () => {
   const getIcon = (type: string) => {
     switch (type) {
       case 'customer':
-        return <User className="w-3.5 h-3.5 text-indigo-600" />;
+        return <User className="w-3.5 h-3.5 text-sky-700" />;
       case 'vehicle':
-        return <Car className="w-3.5 h-3.5 text-emerald-600" />;
+        return <Car className="w-3.5 h-3.5 text-sky-700" />;
       case 'service':
-        return <Wrench className="w-3.5 h-3.5 text-sky-600" />;
+        return <Wrench className="w-3.5 h-3.5 text-sky-700" />;
       case 'invoice':
-        return <Receipt className="w-3.5 h-3.5 text-amber-600" />;
+        return <Receipt className="w-3.5 h-3.5 text-sky-700" />;
       case 'delivery':
-        return <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />;
+        return <CheckCircle className="w-3.5 h-3.5 text-sky-700" />;
       default:
-        return <Activity className="w-3.5 h-3.5 text-slate-600" />;
+        return <Activity className="w-3.5 h-3.5 text-sky-700" />;
     }
   };
 
@@ -42,7 +42,7 @@ export const RecentActivityFeed: React.FC = () => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-slate-700" />
-          <h3 className="text-sm font-bold text-slate-900">Recent Activity Feed</h3>
+          <h2 className="text-sm font-bold text-slate-900">Recent Activity Feed</h2>
         </div>
         <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Live Log</span>
       </div>

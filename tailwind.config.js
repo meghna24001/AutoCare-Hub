@@ -5,6 +5,17 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    borderRadius: {
+      none: '0px',
+      sm: '0.5rem',
+      DEFAULT: '0.5rem',
+      md: '0.5rem',
+      lg: '0.5rem',
+      xl: '0.75rem',
+      '2xl': '1rem',
+      '3xl': '1rem',
+      full: '9999px',
+    },
     extend: {
       colors: {
         brand: {

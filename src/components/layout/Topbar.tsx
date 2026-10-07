@@ -41,7 +41,7 @@ export const Topbar: React.FC<TopbarProps> = ({
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenSidebar}
-          className="p-2 -ml-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 lg:hidden"
+          className="btn-icon -ml-2 lg:hidden"
           aria-label="Open sidebar"
         >
           <Menu className="w-5 h-5" />
@@ -59,7 +59,7 @@ export const Topbar: React.FC<TopbarProps> = ({
             Bays: {occupiedBays}/{bays.length}
           </span>
           <span className="text-slate-400">•</span>
-          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${isBackendOnline ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${isBackendOnline ? 'bg-emerald-100 text-slate-700' : 'bg-amber-100 text-slate-700'}`}>
             {isBackendOnline ? 'SQLite Live' : 'Offline Cache'}
           </span>
         </div>
@@ -69,10 +69,11 @@ export const Topbar: React.FC<TopbarProps> = ({
       <div className="flex-1 max-w-md mx-4">
         <button
           onClick={() => setIsGlobalSearchOpen(true)}
-          className="w-full flex items-center justify-between px-3.5 py-2 bg-slate-50 hover:bg-slate-100/80 text-slate-400 hover:text-slate-600 rounded-xl border border-slate-200/80 transition-all text-sm group"
+          className="btn-secondary w-full justify-between text-sm font-normal text-slate-500 group"
+          aria-label="Open global search"
         >
           <div className="flex items-center gap-2.5 truncate">
-            <Search className="w-4 h-4 text-slate-400 group-hover:text-sky-600 transition-colors" />
+            <Search className="w-4 h-4 text-slate-500 group-hover:text-sky-700 transition-colors" />
             <span className="truncate text-xs sm:text-sm">Search plate (e.g. MH 02 AB 1234), customer, job...</span>
           </div>
           <kbd className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-white rounded border border-slate-200 shadow-2xs">
@@ -87,7 +88,8 @@ export const Topbar: React.FC<TopbarProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsQuickActionOpen(!isQuickActionOpen)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-medium text-xs sm:text-sm shadow-sm shadow-sky-600/20 transition-all"
+            className="btn-primary px-3 py-2 text-xs shadow-sm shadow-sky-600/20 sm:text-sm"
+            aria-expanded={isQuickActionOpen}
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">New Service Job</span>
@@ -109,9 +111,9 @@ export const Topbar: React.FC<TopbarProps> = ({
                     setIsQuickActionOpen(false);
                     onOpenNewJob();
                   }}
-                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition-colors text-left"
+                  className="btn-ghost w-full justify-start px-3.5 py-2 text-xs"
                 >
-                  <Wrench className="w-4 h-4 text-sky-600" />
+                  <Wrench className="w-4 h-4 text-sky-700" />
                   <span>Create Service Job</span>
                 </button>
                 <button
@@ -119,9 +121,9 @@ export const Topbar: React.FC<TopbarProps> = ({
                     setIsQuickActionOpen(false);
                     onOpenNewCustomer();
                   }}
-                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition-colors text-left"
+                  className="btn-ghost w-full justify-start px-3.5 py-2 text-xs"
                 >
-                  <UserPlus className="w-4 h-4 text-indigo-600" />
+                  <UserPlus className="w-4 h-4 text-sky-700" />
                   <span>Register Customer</span>
                 </button>
                 <button
@@ -129,9 +131,9 @@ export const Topbar: React.FC<TopbarProps> = ({
                     setIsQuickActionOpen(false);
                     onOpenNewVehicle();
                   }}
-                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition-colors text-left"
+                  className="btn-ghost w-full justify-start px-3.5 py-2 text-xs"
                 >
-                  <Car className="w-4 h-4 text-emerald-600" />
+                  <Car className="w-4 h-4 text-sky-700" />
                   <span>Register Vehicle</span>
                 </button>
                 <div className="my-1 border-t border-slate-100" />
@@ -140,9 +142,9 @@ export const Topbar: React.FC<TopbarProps> = ({
                     setIsQuickActionOpen(false);
                     onOpenRecordPayment();
                   }}
-                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition-colors text-left"
+                  className="btn-ghost w-full justify-start px-3.5 py-2 text-xs"
                 >
-                  <Receipt className="w-4 h-4 text-amber-600" />
+                  <Receipt className="w-4 h-4 text-sky-700" />
                   <span>Record Invoice Payment</span>
                 </button>
               </div>
@@ -154,8 +156,9 @@ export const Topbar: React.FC<TopbarProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsNotifOpen(!isNotifOpen)}
-            className="p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-colors relative"
+            className="btn-icon relative"
             aria-label="Notifications"
+            aria-expanded={isNotifOpen}
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
@@ -167,7 +170,7 @@ export const Topbar: React.FC<TopbarProps> = ({
 
         {/* User Avatar */}
         <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-          <div className="w-8 h-8 rounded-full bg-slate-900 text-amber-400 font-bold flex items-center justify-center text-xs shadow-sm ring-2 ring-slate-100">
+          <div className="w-8 h-8 rounded-full bg-slate-900 text-white font-bold flex items-center justify-center text-xs shadow-sm ring-2 ring-slate-100">
             AM
           </div>
         </div>

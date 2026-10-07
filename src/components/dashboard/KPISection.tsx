@@ -40,7 +40,7 @@ export const KPISection: React.FC<KPISectionProps> = ({ onSelectTab }) => {
         subtitle="Registered owners"
         icon={<Users className="w-5 h-5" />}
         trend={{ value: '12% this mo', isPositive: true }}
-        color="indigo"
+        color="sky"
         onClick={() => onSelectTab('customers')}
       />
 
@@ -59,7 +59,7 @@ export const KPISection: React.FC<KPISectionProps> = ({ onSelectTab }) => {
         value={activeServices}
         subtitle="In progress / bays"
         icon={<Wrench className="w-5 h-5" />}
-        color="amber"
+        color="sky"
         onClick={() => onSelectTab('jobs')}
       />
 
@@ -68,7 +68,7 @@ export const KPISection: React.FC<KPISectionProps> = ({ onSelectTab }) => {
         value={completedServices}
         subtitle="Finished & delivered"
         icon={<CheckCircle2 className="w-5 h-5" />}
-        color="emerald"
+        color="sky"
         onClick={() => onSelectTab('history')}
       />
 
@@ -78,7 +78,7 @@ export const KPISection: React.FC<KPISectionProps> = ({ onSelectTab }) => {
         subtitle="Cash, UPI & Cards"
         icon={<IndianRupee className="w-5 h-5" />}
         trend={{ value: '18% vs avg', isPositive: true }}
-        color="emerald"
+        color="sky"
         onClick={() => onSelectTab('billing')}
       />
 
@@ -87,7 +87,7 @@ export const KPISection: React.FC<KPISectionProps> = ({ onSelectTab }) => {
         value={formatCurrency(pendingPayments)}
         subtitle="Awaiting settlement"
         icon={<Clock className="w-5 h-5" />}
-        color="rose"
+        color="sky"
         onClick={() => onSelectTab('billing')}
       />
     </div>

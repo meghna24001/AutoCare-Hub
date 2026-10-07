@@ -36,14 +36,14 @@ export const TodayJobsTable: React.FC<TodayJobsTableProps> = ({
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+      <div className="p-5 border-b border-slate-100 flex flex-wrap items-center gap-x-6 gap-y-2">
         <div>
-          <h3 className="text-base font-bold text-slate-900">Today's Service Operations</h3>
+          <h2 className="text-base font-bold text-slate-900">Today's Service Operations</h2>
           <p className="text-xs text-slate-500 mt-0.5">Live workshop jobs requiring monitoring and workflow updates</p>
         </div>
         <button
           onClick={onViewAllJobs}
-          className="text-xs font-semibold text-sky-600 hover:text-sky-700 flex items-center gap-1 hover:underline"
+          className="btn-ghost shrink-0 px-2 py-1 text-xs text-sky-700 hover:text-sky-800"
         >
           View all ({services.length})
           <ChevronRight className="w-4 h-4" />
@@ -106,7 +106,7 @@ export const TodayJobsTable: React.FC<TodayJobsTableProps> = ({
 
                     {/* Service Type */}
                     <td className="py-3.5 px-4">
-                      <p className="font-medium text-slate-800 line-clamp-1 max-w-[200px]" title={job.serviceType}>
+                      <p className="font-medium text-slate-700 line-clamp-1 max-w-[200px]" title={job.serviceType}>
                         {job.serviceType}
                       </p>
                       <span className="text-[11px] text-slate-400">{job.serviceDate}</span>
@@ -145,13 +145,15 @@ export const TodayJobsTable: React.FC<TodayJobsTableProps> = ({
                       <div className="flex items-center justify-center gap-1.5">
                         <button
                           onClick={() => onViewJob(job.serviceID)}
-                          className="px-2.5 py-1 text-xs font-medium text-slate-700 hover:text-sky-700 hover:bg-sky-50 rounded-lg transition-colors"
+                          className="btn-secondary"
+                          aria-label={`View details for service job ${job.serviceID}`}
                         >
                           Details
                         </button>
                         <button
                           onClick={() => onViewInvoice(job.serviceID)}
-                          className="px-2.5 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
+                          className="btn-secondary"
+                          aria-label={`View bill for service job ${job.serviceID}`}
                         >
                           Bill
                         </button>

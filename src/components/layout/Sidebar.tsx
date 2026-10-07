@@ -92,7 +92,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 lg:hidden"
+            className="btn-icon -mr-1.5 text-slate-400 hover:bg-slate-800 hover:text-white focus-visible:ring-offset-slate-950 lg:hidden"
+            aria-label="Close sidebar"
           >
             <X className="w-5 h-5" />
           </button>
@@ -111,10 +112,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                className={`w-full justify-between ${
                   isActive
-                    ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/80'
+                    ? 'btn-primary shadow-md shadow-sky-600/30'
+                    : 'btn-ghost text-slate-400 hover:bg-slate-900/80 hover:text-slate-200'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -140,10 +141,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
           <button
             onClick={() => handleNavClick('settings')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`w-full justify-start ${
               activeTab === 'settings'
-                ? 'bg-sky-600 text-white font-semibold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/80'
+                ? 'btn-primary'
+                : 'btn-ghost text-slate-400 hover:bg-slate-900/80 hover:text-slate-200'
             }`}
           >
             <Settings className="w-4 h-4 text-slate-400" />
@@ -157,7 +158,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 resetToDemoData();
               }
             }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm text-slate-400 hover:text-amber-300 hover:bg-amber-950/20 transition-all group"
+            className="btn-ghost w-full justify-start text-slate-400 hover:bg-slate-900/80 hover:text-slate-200 group"
           >
             <RotateCcw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
             <span>Restore Demo Records</span>
@@ -167,12 +168,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {/* Bottom Profile / Workshop Card */}
         <div className="p-4 border-t border-slate-800/80 bg-navy-950">
           <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-500 to-amber-600 text-slate-950 font-bold flex items-center justify-center text-sm">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-500 to-amber-600 text-slate-900 font-bold flex items-center justify-center text-sm">
               AM
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-white truncate">Arun Mehta</p>
-              <p className="text-[11px] text-slate-400 truncate">Service Manager • Apex Motors</p>
+              <p className="text-xs text-slate-400 truncate">Service Manager • Apex Motors</p>
             </div>
             <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="Online" />
           </div>

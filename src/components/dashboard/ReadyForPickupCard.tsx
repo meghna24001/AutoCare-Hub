@@ -24,10 +24,10 @@ export const ReadyForPickupCard: React.FC<ReadyForPickupCardProps> = ({
       <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <span className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
+            <span className="p-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100">
               <CheckCircle2 className="w-4 h-4" />
             </span>
-            <h3 className="text-sm font-bold text-slate-900">Ready for Pickup</h3>
+            <h2 className="text-sm font-bold text-slate-900">Ready for Pickup</h2>
           </div>
         </div>
         <p className="text-xs text-slate-500 py-6 text-center">
@@ -41,15 +41,15 @@ export const ReadyForPickupCard: React.FC<ReadyForPickupCardProps> = ({
     <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <span className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
+          <span className="p-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100">
             <CheckCircle2 className="w-4 h-4" />
           </span>
           <div>
-            <h3 className="text-sm font-bold text-slate-900">Vehicles Ready for Pickup</h3>
+            <h2 className="text-sm font-bold text-slate-900">Vehicles Ready for Pickup</h2>
             <p className="text-xs text-slate-500">{readyServices.length} vehicle(s) waiting for customer delivery</p>
           </div>
         </div>
-        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
           Action Required
         </span>
       </div>
@@ -76,7 +76,7 @@ export const ReadyForPickupCard: React.FC<ReadyForPickupCardProps> = ({
                       <span className="number-plate-strip">IND</span>
                       {vehicle.registrationNumber}
                     </span>
-                    <span className="text-xs font-semibold text-slate-800">
+                    <span className="text-xs font-semibold text-slate-700">
                       {vehicle.manufacturer} {vehicle.model}
                     </span>
                   </div>
@@ -91,14 +91,14 @@ export const ReadyForPickupCard: React.FC<ReadyForPickupCardProps> = ({
                     <span className="text-slate-400">•</span>
                     <a
                       href={`tel:${customer?.mobileNumber}`}
-                      className="text-sky-600 hover:text-sky-700 font-mono flex items-center gap-1"
+                      className="text-sky-700 hover:text-sky-800 font-mono flex items-center gap-1"
                     >
                       <Phone className="w-3 h-3" />
                       {customer?.mobileNumber}
                     </a>
                   </div>
-                  <div className="flex items-center gap-1 text-[11px] text-slate-500">
-                    <Clock className="w-3 h-3 text-emerald-600" />
+                  <div className="flex items-center gap-1 text-xs text-slate-500">
+                    <Clock className="w-3 h-3 text-emerald-700" />
                     <span>Tested & Cleaned</span>
                   </div>
                 </div>
@@ -109,13 +109,15 @@ export const ReadyForPickupCard: React.FC<ReadyForPickupCardProps> = ({
               <div className="mt-4 pt-3 border-t border-emerald-100 flex items-center justify-between gap-2">
                 <button
                   onClick={() => onViewService(job.serviceID)}
-                  className="text-xs font-medium text-slate-600 hover:text-slate-900 underline"
+                  className="btn-secondary"
+                  aria-label={`View details for service job ${job.serviceID}`}
                 >
                   View Job Details
                 </button>
                 <button
                   onClick={() => onDeliverService(job.serviceID)}
-                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors flex items-center gap-1"
+                  className="btn-primary px-3 py-1.5 text-xs"
+                  aria-label={`Mark service job ${job.serviceID} as delivered`}
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>Mark Delivered</span>

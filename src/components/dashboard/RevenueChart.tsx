@@ -63,23 +63,23 @@ export const RevenueChart: React.FC = () => {
       {/* Header with Switcher */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-bold text-slate-900">Financial & Workshop Dynamics</h3>
+          <h2 className="text-sm font-bold text-slate-900">Financial & Workshop Dynamics</h2>
           <p className="text-xs text-slate-500">Labour vs Spare Parts & Workflow Distribution</p>
         </div>
-        <div className="flex items-center p-0.5 bg-slate-100 rounded-lg border border-slate-200 text-xs">
+        <div role="group" aria-label="Chart view" className="flex items-center p-0.5 bg-slate-100 rounded-lg border border-slate-200 text-xs">
           <button
             onClick={() => setViewMode('revenue')}
-            className={`px-2.5 py-1 rounded-md font-medium transition-all ${
-              viewMode === 'revenue' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
+            type="button"
+            aria-pressed={viewMode === 'revenue'}
+            className="btn-segment"
           >
             Revenue
           </button>
           <button
             onClick={() => setViewMode('status')}
-            className={`px-2.5 py-1 rounded-md font-medium transition-all ${
-              viewMode === 'status' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
+            type="button"
+            aria-pressed={viewMode === 'status'}
+            className="btn-segment"
           >
             Status
           </button>
@@ -91,14 +91,14 @@ export const RevenueChart: React.FC = () => {
           {/* Top Ratio Stats */}
           <div className="grid grid-cols-2 gap-3 mb-5">
             <div className="p-3 rounded-xl bg-sky-50 border border-sky-100">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-sky-700">Labour Charges</span>
-              <p className="text-lg font-bold text-sky-950 font-mono mt-0.5">{formatCurrency(totalLabour)}</p>
-              <span className="text-xs text-sky-600 font-medium">{labourPct}% of total billing</span>
+              <span className="text-xs font-semibold text-slate-700">Labour Charges</span>
+              <p className="text-lg font-bold text-slate-900 font-mono mt-0.5">{formatCurrency(totalLabour)}</p>
+              <span className="text-xs text-slate-600 font-medium">{labourPct}% of total billing</span>
             </div>
             <div className="p-3 rounded-xl bg-amber-50 border border-amber-100">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-700">Spare Parts Cost</span>
-              <p className="text-lg font-bold text-amber-950 font-mono mt-0.5">{formatCurrency(totalParts)}</p>
-              <span className="text-xs text-amber-600 font-medium">{partsPct}% of total billing</span>
+              <span className="text-xs font-semibold text-slate-700">Spare Parts Cost</span>
+              <p className="text-lg font-bold text-slate-900 font-mono mt-0.5">{formatCurrency(totalParts)}</p>
+              <span className="text-xs text-slate-600 font-medium">{partsPct}% of total billing</span>
             </div>
           </div>
 
@@ -133,7 +133,7 @@ export const RevenueChart: React.FC = () => {
                     </div>
 
                     {/* Month Label */}
-                    <span className="text-[11px] font-medium text-slate-500">{d.month}</span>
+                    <span className="text-xs font-medium text-slate-500">{d.month}</span>
                   </div>
                 );
               })}
@@ -142,11 +142,11 @@ export const RevenueChart: React.FC = () => {
             {/* Legend */}
             <div className="flex items-center justify-center gap-5 pt-3 border-t border-slate-100 text-xs text-slate-500">
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm bg-sky-600" />
+                <span className="w-2.5 h-2.5 rounded-full bg-sky-600" />
                 <span>Labour Charges</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm bg-amber-400" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
                 <span>Spare Parts</span>
               </div>
             </div>
