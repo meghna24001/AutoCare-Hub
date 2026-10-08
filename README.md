@@ -141,10 +141,10 @@ The backend provides a RESTful API powered by **Node.js and Express**:
 
 1. Create a Supabase project and copy its PostgreSQL connection string from **Project Settings → Database**. Use the session pooler connection string if the hosting provider cannot connect over IPv6.
 2. In Render, create a new Blueprint from this GitHub repository and select the included `render.yaml`.
-3. Set the Render service's `DATABASE_URL` environment variable to the Supabase connection string. Keep this value private; never commit it or put it in frontend variables.
+3. Set Render's `DATABASE_URL` to the Supabase connection string, and set `APP_USERNAME` and `APP_PASSWORD` to a unique demo login. Keep all three private; never commit them or put them in frontend variables.
 4. Deploy. The Express service serves both the built frontend and `/api` routes from the same HTTPS origin.
 
-The included Render configuration targets its free web-service tier; free services may sleep while idle. Supabase free projects may also have inactivity limits, quotas, or plan changes. This demo does not yet include user authentication or authorization, so do not enter real customer or payment information and do not treat it as a production system.
+The hosted service requires HTTP Basic Authentication for the dashboard and API (except the health check); this is a shared demo login, not individual user accounts. The included Render configuration targets its free web-service tier; free services may sleep while idle. Supabase free projects may also have inactivity limits, quotas, or plan changes. Do not enter real customer or payment information or treat this demo as a production system.
 
 ### REST API Endpoints
 

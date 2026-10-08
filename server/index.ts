@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import { createHash, timingSafeEqual } from 'crypto';
 import path from 'path';
 import { initializeAndSeedDatabase } from './db/seed.js';
 import { customerRouter } from './routes/customerRoutes.js';
@@ -12,11 +13,40 @@ import { reportRouter } from './routes/reportRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const appUsername = process.env.APP_USERNAME;
+const appPassword = process.env.APP_PASSWORD;
+
+if (process.env.NODE_ENV === 'production' && (!appUsername || !appPassword)) {
+  throw new Error('APP_USERNAME and APP_PASSWORD must be configured in production.');
+}
 
 // Middleware
 app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+if (process.env.NODE_ENV === 'production') {
+  app.use((req: Request, res: Response, next) => {
+    if (req.path === '/api/health') return next();
+
+    const authorization = req.header('authorization') || '';
+    const encodedCredentials = authorization.match(/^Basic\s+(.+)$/i)?.[1];
+    const decodedCredentials = encodedCredentials
+      ? Buffer.from(encodedCredentials, 'base64').toString('utf8')
+      : '';
+    const separator = decodedCredentials.indexOf(':');
+    const username = separator >= 0 ? decodedCredentials.slice(0, separator) : '';
+    const password = separator >= 0 ? decodedCredentials.slice(separator + 1) : '';
+    const hash = (value: string) => createHash('sha256').update(value).digest();
+    const valid = timingSafeEqual(hash(username), hash(appUsername!)) &&
+      timingSafeEqual(hash(password), hash(appPassword!));
+
+    if (!valid) {
+      res.setHeader('WWW-Authenticate', 'Basic realm="AutoCare Hub", charset="UTF-8"');
+      return res.status(401).send('Authentication required.');
+    }
+    next();
+  });
+}
 
 // Health Check
 app.get('/api/health', (_req: Request, res: Response) => {

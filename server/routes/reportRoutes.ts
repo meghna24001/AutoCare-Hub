@@ -79,7 +79,7 @@ reportRouter.get('/revenue-analytics', async (req: Request, res: Response) => {
         COALESCE(SUM(s.total_bill_amount), 0) as totalRevenue
       FROM service_jobs s
       GROUP BY s.service_type
-      ORDER BY totalRevenue DESC
+      ORDER BY "totalRevenue" DESC
     `);
 
     const byMonth = await queryAll(`
@@ -89,8 +89,8 @@ reportRouter.get('/revenue-analytics', async (req: Request, res: Response) => {
         COALESCE(SUM(total_amount), 0) as totalAmount,
         COALESCE(SUM(paid_amount), 0) as collectedAmount
       FROM invoices
-      GROUP BY monthYear
-      ORDER BY monthYear DESC
+      GROUP BY "monthYear"
+      ORDER BY "monthYear" DESC
       LIMIT 6
     `);
 
