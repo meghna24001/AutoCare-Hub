@@ -8,9 +8,9 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: DEMO_READ_ONLY
+        value: "true"
+      - key: VITE_DEMO_READ_ONLY
+        value: "true"
       - key: DATABASE_URL
-        sync: false
-      - key: APP_USERNAME
-        sync: false
-      - key: APP_PASSWORD
         sync: false

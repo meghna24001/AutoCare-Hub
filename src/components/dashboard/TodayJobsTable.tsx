@@ -15,7 +15,7 @@ export const TodayJobsTable: React.FC<TodayJobsTableProps> = ({
   onViewInvoice,
   onViewAllJobs,
 }) => {
-  const { services, vehicles, customers, mechanics, updateServiceStatus } = useWorkshop();
+  const { services, vehicles, customers, mechanics, updateServiceStatus, isDemoReadOnly } = useWorkshop();
 
   // Show active jobs or jobs from today first
   const activeJobs = services
@@ -122,7 +122,7 @@ export const TodayJobsTable: React.FC<TodayJobsTableProps> = ({
 
                     {/* Status & Quick Transition */}
                     <td className="py-3.5 px-4">
-                      <select
+                      {!isDemoReadOnly ? <select
                         value={job.status}
                         onChange={e => updateServiceStatus(job.serviceID, e.target.value as ServiceStatus)}
                         className="text-xs font-medium rounded-lg border border-slate-200 bg-white py-1 px-2 text-slate-800 focus:ring-1 focus:ring-sky-500 focus:outline-none cursor-pointer"
@@ -132,7 +132,7 @@ export const TodayJobsTable: React.FC<TodayJobsTableProps> = ({
                             {s}
                           </option>
                         ))}
-                      </select>
+                      </select> : <span className="text-xs font-medium text-slate-700">{job.status}</span>}
                     </td>
 
                     {/* Total Amount */}

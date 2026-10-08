@@ -16,6 +16,7 @@ interface CustomerDetailModalProps {
   onSelectVehicle: (vehicleId: number) => void;
   onSelectJob: (serviceId: number) => void;
   onEditCustomer: (customer: Customer) => void;
+  readOnly?: boolean;
 }
 
 export const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
@@ -29,6 +30,7 @@ export const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
   onSelectVehicle,
   onSelectJob,
   onEditCustomer,
+  readOnly = false,
 }) => {
   if (!customer) return null;
 
@@ -72,7 +74,7 @@ export const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
               </div>
             </div>
 
-            <button
+            {!readOnly && <button
               onClick={() => {
                 onClose();
                 onEditCustomer(customer);
@@ -80,7 +82,7 @@ export const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
               className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold border border-slate-700 transition-colors self-start sm:self-auto"
             >
               Edit Profile
-            </button>
+            </button>}
           </div>
 
           <div className="mt-4 pt-3 border-t border-slate-800 flex items-center gap-2 text-xs text-slate-400">
@@ -112,7 +114,7 @@ export const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
               <Car className="w-4 h-4 text-sky-600" />
               <h4 className="text-sm font-bold text-slate-900">Registered Vehicles ({customerVehicles.length})</h4>
             </div>
-            <button
+            {!readOnly && <button
               onClick={() => {
                 onClose();
                 onAddVehicle(customer.customerID);
@@ -121,7 +123,7 @@ export const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
             >
               <Plus className="w-3.5 h-3.5" />
               Register Vehicle
-            </button>
+            </button>}
           </div>
 
           {customerVehicles.length === 0 ? (
@@ -167,7 +169,7 @@ export const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
               <Wrench className="w-4 h-4 text-amber-600" />
               <h4 className="text-sm font-bold text-slate-900">Service Records & Invoices ({customerServices.length})</h4>
             </div>
-            {customerVehicles.length > 0 && (
+            {customerVehicles.length > 0 && !readOnly && (
               <button
                 onClick={() => {
                   onClose();

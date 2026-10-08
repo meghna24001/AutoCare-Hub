@@ -22,7 +22,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
   onSelectVehicle,
   onSelectService,
 }) => {
-  const { invoices, customers, vehicles, services, recordPayment } = useWorkshop();
+  const { invoices, customers, vehicles, services, recordPayment, isDemoReadOnly } = useWorkshop();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -233,7 +233,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                             <span>View Bill</span>
                           </button>
 
-                          {invoice.paymentStatus !== 'Paid' && (
+                          {!isDemoReadOnly && invoice.paymentStatus !== 'Paid' && (
                             <button
                               onClick={() => setPayingInvoice(invoice)}
                               className="px-2.5 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors flex items-center gap-1"
@@ -266,11 +266,12 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
           const inv = invoices.find(i => i.invoiceNumber === num);
           if (inv) setPayingInvoice(inv);
         }}
+        readOnly={isDemoReadOnly}
       />
 
       {/* Record Payment Modal */}
       <RecordPaymentModal
-        isOpen={!!payingInvoice}
+        isOpen={!!payingInvoice && !isDemoReadOnly}
         onClose={() => setPayingInvoice(null)}
         invoice={payingInvoice}
         onSubmit={recordPayment}

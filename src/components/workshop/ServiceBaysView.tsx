@@ -15,7 +15,7 @@ export const ServiceBaysView: React.FC<ServiceBaysViewProps> = ({
   onSelectService,
   onSelectVehicle,
 }) => {
-  const { bays, vehicles, services, mechanics, updateBayStatus } = useWorkshop();
+  const { bays, vehicles, services, mechanics, updateBayStatus, isDemoReadOnly } = useWorkshop();
 
   const occupiedCount = bays.filter(b => b.status === 'Occupied').length;
   const availableCount = bays.filter(b => b.status === 'Available').length;
@@ -150,20 +150,22 @@ export const ServiceBaysView: React.FC<ServiceBaysViewProps> = ({
                     >
                       Inspect Job Card
                     </button>
-                    <button
+                    {!isDemoReadOnly && <button
                       onClick={() => updateBayStatus(bay.bayId, 'Available')}
                       className="text-[11px] px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors"
                     >
                       Release Bay
-                    </button>
+                    </button>}
                   </>
                 ) : (
-                  <button
-                    onClick={() => updateBayStatus(bay.bayId, 'Occupied')}
-                    className="w-full py-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold border border-slate-200 transition-colors"
-                  >
-                    Reserve Bay
-                  </button>
+                  !isDemoReadOnly ? (
+                    <button
+                      onClick={() => updateBayStatus(bay.bayId, 'Occupied')}
+                      className="w-full py-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold border border-slate-200 transition-colors"
+                    >
+                      Reserve Bay
+                    </button>
+                  ) : null
                 )}
               </div>
             </div>

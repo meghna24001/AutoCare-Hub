@@ -14,7 +14,7 @@ export const ReadyForPickupCard: React.FC<ReadyForPickupCardProps> = ({
   onViewService,
   onDeliverService,
 }) => {
-  const { services, vehicles, customers } = useWorkshop();
+  const { services, vehicles, customers, isDemoReadOnly } = useWorkshop();
 
   // Find services with status 'Ready for Pickup'
   const readyServices = services.filter(s => s.status === 'Ready for Pickup');
@@ -114,14 +114,14 @@ export const ReadyForPickupCard: React.FC<ReadyForPickupCardProps> = ({
                 >
                   View Job Details
                 </button>
-                <button
+                {!isDemoReadOnly && <button
                   onClick={() => onDeliverService(job.serviceID)}
                   className="btn-primary px-3 py-1.5 text-xs"
                   aria-label={`Mark service job ${job.serviceID} as delivered`}
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>Mark Delivered</span>
-                </button>
+                </button>}
               </div>
             </div>
           );

@@ -22,6 +22,7 @@ interface ServiceDetailModalProps {
   onViewInvoice: (serviceId: number) => void;
   onEditService: (service: ServiceJob) => void;
   onDeleteService: (service: ServiceJob) => void;
+  readOnly?: boolean;
 }
 
 const WORKFLOW_STEPS: ServiceStatus[] = [
@@ -46,6 +47,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
   onViewInvoice,
   onEditService,
   onDeleteService,
+  readOnly = false,
 }) => {
   if (!service) return null;
 
@@ -71,7 +73,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
             {/* Quick Status Selector */}
             <div className="flex items-center gap-2">
               <span className="text-xs text-slate-400">Change Status:</span>
-              <select
+              {!readOnly && <select
                 value={service.status}
                 onChange={e => onUpdateStatus(service.serviceID, e.target.value as ServiceStatus)}
                 className="bg-slate-800 text-white border border-slate-700 rounded-lg px-2.5 py-1 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-sky-500"
@@ -81,7 +83,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
                     {s}
                   </option>
                 ))}
-              </select>
+              </select>}
             </div>
           </div>
 
@@ -95,6 +97,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
                 return (
                   <div key={step} className="flex flex-col items-center relative z-10 flex-1">
                     <button
+                      disabled={readOnly}
                       onClick={() => onUpdateStatus(service.serviceID, step)}
                       className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
                         isCurrent
@@ -259,7 +262,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
 
         {/* Action Footer */}
         <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
-          <button
+          {!readOnly && <button
             onClick={() => {
               onClose();
               onDeleteService(service);
@@ -268,10 +271,10 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
           >
             <Trash2 className="w-3.5 h-3.5" />
             Delete Service Record
-          </button>
+          </button>}
 
           <div className="flex items-center gap-2">
-            <button
+            {!readOnly && <button
               onClick={() => {
                 onClose();
                 onEditService(service);
@@ -280,7 +283,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
             >
               <Edit2 className="w-3.5 h-3.5" />
               Edit Charges
-            </button>
+            </button>}
             <button
               onClick={() => {
                 onClose();

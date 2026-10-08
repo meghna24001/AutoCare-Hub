@@ -30,7 +30,7 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
   onSelectJob,
   onAddNewCustomer,
 }) => {
-  const { vehicles, customers, services, addVehicle, updateVehicle, deleteVehicle } = useWorkshop();
+  const { vehicles, customers, services, addVehicle, updateVehicle, deleteVehicle, isDemoReadOnly } = useWorkshop();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [fuelFilter, setFuelFilter] = useState<string>('all');
@@ -89,13 +89,13 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button
+          {!isDemoReadOnly && <button
             onClick={() => setIsAddModalOpen(true)}
             className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-sm shadow-sky-600/20 transition-all flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             <span>Register Vehicle</span>
-          </button>
+          </button>}
         </div>
       </div>
 
@@ -263,27 +263,27 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
                             >
                               <Eye className="w-4 h-4" />
                             </button>
-                            <button
+                            {!isDemoReadOnly && <button
                               onClick={() => onAddJobForVehicle(vehicle.customerID, vehicle.vehicleID)}
                               className="p-1.5 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
                               title="Create Service Job"
                             >
                               <Wrench className="w-4 h-4" />
-                            </button>
-                            <button
+                            </button>}
+                            {!isDemoReadOnly && <button
                               onClick={() => setEditingVehicle(vehicle)}
                               className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                               title="Edit Vehicle"
                             >
                               <Edit2 className="w-4 h-4" />
-                            </button>
-                            <button
+                            </button>}
+                            {!isDemoReadOnly && <button
                               onClick={() => setDeletingVehicle(vehicle)}
                               className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                               title="Delete Vehicle"
                             >
                               <Trash2 className="w-4 h-4" />
-                            </button>
+                            </button>}
                           </div>
                         </td>
                       </tr>
@@ -344,13 +344,13 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
                   >
                     View History
                   </button>
-                  <button
+                  {!isDemoReadOnly && <button
                     onClick={() => onAddJobForVehicle(vehicle.customerID, vehicle.vehicleID)}
                     className="px-3 py-1.5 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1"
                   >
                     <Wrench className="w-3.5 h-3.5" />
                     <span>New Job</span>
-                  </button>
+                  </button>}
                 </div>
               </div>
             );
@@ -360,7 +360,7 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
 
       {/* Register Vehicle Modal */}
       <VehicleFormModal
-        isOpen={isAddModalOpen}
+        isOpen={isAddModalOpen && !isDemoReadOnly}
         onClose={() => setIsAddModalOpen(false)}
         customers={customers}
         onSubmit={addVehicle}
@@ -369,7 +369,7 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
 
       {/* Edit Vehicle Modal */}
       <VehicleFormModal
-        isOpen={!!editingVehicle}
+        isOpen={!!editingVehicle && !isDemoReadOnly}
         onClose={() => setEditingVehicle(null)}
         customers={customers}
         initialData={editingVehicle}
@@ -390,11 +390,12 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
         onSelectJob={onSelectJob}
         onSelectCustomer={onSelectCustomer}
         onEditVehicle={v => setEditingVehicle(v)}
+        readOnly={isDemoReadOnly}
       />
 
       {/* Confirm Delete Dialog */}
       <ConfirmDialog
-        isOpen={!!deletingVehicle}
+        isOpen={!!deletingVehicle && !isDemoReadOnly}
         onClose={() => setDeletingVehicle(null)}
         onConfirm={handleDeleteConfirm}
         title="Delete Vehicle Record"

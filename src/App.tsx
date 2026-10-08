@@ -50,6 +50,7 @@ const MainLayout: React.FC = () => {
     updateServiceStatus,
     recordPayment,
     isLoading,
+    isDemoReadOnly,
   } = useWorkshop();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -135,7 +136,7 @@ const MainLayout: React.FC = () => {
           <Wrench className="w-8 h-8 text-white animate-spin" style={{ animationDuration: '3s' }} />
         </div>
         <h2 className="text-xl font-bold tracking-tight">AutoCare Hub</h2>
-        <p className="text-sm text-slate-400 mt-1">Connecting to SQLite database...</p>
+        <p className="text-sm text-slate-400 mt-1">Loading workshop demo...</p>
       </div>
     );
   }
@@ -160,6 +161,12 @@ const MainLayout: React.FC = () => {
             }
           }}
         />
+
+        {isDemoReadOnly && (
+          <div className="mx-4 mt-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 sm:mx-6 lg:mx-8" role="note">
+            <strong>Portfolio demo:</strong> fictional sample records only. This site is read-only; changes are disabled and are not saved.
+          </div>
+        )}
 
         {/* Page Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
@@ -206,6 +213,7 @@ const MainLayout: React.FC = () => {
               onViewInvoice={handleViewInvoiceForService}
               onSelectCustomer={handleSelectCustomerById}
               onSelectVehicle={handleSelectVehicleById}
+              readOnly={isDemoReadOnly}
             />
           )}
 
@@ -236,7 +244,7 @@ const MainLayout: React.FC = () => {
         {/* Footer */}
         <footer className="border-t border-slate-200/80 bg-white py-4 px-6 text-center text-xs text-slate-500">
           <p>
-            AutoCare Hub • Professional Vehicle Service Centre Management Suite • Commercial Edition
+            AutoCare Hub • Portfolio demo • Fictional sample data
           </p>
         </footer>
       </div>
@@ -253,13 +261,13 @@ const MainLayout: React.FC = () => {
 
       {/* Quick Action Modals */}
       <CustomerFormModal
-        isOpen={isNewCustomerOpen}
+        isOpen={isNewCustomerOpen && !isDemoReadOnly}
         onClose={() => setIsNewCustomerOpen(false)}
         onSubmit={addCustomer}
       />
 
       <VehicleFormModal
-        isOpen={isNewVehicleOpen}
+        isOpen={isNewVehicleOpen && !isDemoReadOnly}
         onClose={() => setIsNewVehicleOpen(false)}
         customers={customers}
         preselectedCustomerId={preselectedCustomerId}
@@ -268,7 +276,7 @@ const MainLayout: React.FC = () => {
       />
 
       <ServiceJobFormModal
-        isOpen={isNewJobOpen}
+        isOpen={isNewJobOpen && !isDemoReadOnly}
         onClose={() => setIsNewJobOpen(false)}
         customers={customers}
         vehicles={vehicles}
@@ -295,6 +303,7 @@ const MainLayout: React.FC = () => {
           setSelectedCustomer(null);
           setEditingCustomer(cust);
         }}
+        readOnly={isDemoReadOnly}
       />
 
       <VehicleDetailModal
@@ -310,6 +319,7 @@ const MainLayout: React.FC = () => {
           setSelectedVehicle(null);
           setEditingVehicle(veh);
         }}
+        readOnly={isDemoReadOnly}
       />
 
       <ServiceDetailModal
@@ -335,10 +345,11 @@ const MainLayout: React.FC = () => {
             }
           }
         }}
+        readOnly={isDemoReadOnly}
       />
 
       {/* Edit Record Modals */}
-      {editingCustomer && (
+      {editingCustomer && !isDemoReadOnly && (
         <CustomerFormModal
           isOpen={!!editingCustomer}
           onClose={() => setEditingCustomer(null)}
@@ -351,7 +362,7 @@ const MainLayout: React.FC = () => {
         />
       )}
 
-      {editingVehicle && (
+      {editingVehicle && !isDemoReadOnly && (
         <VehicleFormModal
           isOpen={!!editingVehicle}
           onClose={() => setEditingVehicle(null)}
@@ -365,7 +376,7 @@ const MainLayout: React.FC = () => {
         />
       )}
 
-      {editingService && (
+      {editingService && !isDemoReadOnly && (
         <ServiceJobFormModal
           isOpen={!!editingService}
           onClose={() => setEditingService(null)}
@@ -392,10 +403,11 @@ const MainLayout: React.FC = () => {
           const inv = invoices.find(i => i.invoiceNumber === num);
           if (inv) setPayingInvoice(inv);
         }}
+        readOnly={isDemoReadOnly}
       />
 
       <RecordPaymentModal
-        isOpen={!!payingInvoice}
+        isOpen={!!payingInvoice && !isDemoReadOnly}
         onClose={() => setPayingInvoice(null)}
         invoice={payingInvoice}
         onSubmit={recordPayment}

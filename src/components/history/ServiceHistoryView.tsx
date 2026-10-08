@@ -16,12 +16,14 @@ interface ServiceHistoryViewProps {
   onViewInvoice: (serviceId: number) => void;
   onSelectCustomer: (customerId: number) => void;
   onSelectVehicle: (vehicleId: number) => void;
+  readOnly?: boolean;
 }
 
 export const ServiceHistoryView: React.FC<ServiceHistoryViewProps> = ({
   onViewInvoice,
   onSelectCustomer,
   onSelectVehicle,
+  readOnly = false,
 }) => {
   const { services, vehicles, customers, mechanics, updateService, updateServiceStatus, deleteService } = useWorkshop();
 
@@ -278,10 +280,11 @@ export const ServiceHistoryView: React.FC<ServiceHistoryViewProps> = ({
           setEditingService(s);
         }}
         onDeleteService={s => setDeletingService(s)}
+        readOnly={readOnly}
       />
 
       {/* Edit Service Job Modal */}
-      {editingService && (
+      {editingService && !readOnly && (
         <ServiceJobFormModal
           isOpen={!!editingService}
           onClose={() => setEditingService(null)}
@@ -299,7 +302,7 @@ export const ServiceHistoryView: React.FC<ServiceHistoryViewProps> = ({
 
       {/* Confirm Delete */}
       <ConfirmDialog
-        isOpen={!!deletingService}
+        isOpen={!!deletingService && !readOnly}
         onClose={() => setDeletingService(null)}
         onConfirm={async () => {
           if (deletingService) {

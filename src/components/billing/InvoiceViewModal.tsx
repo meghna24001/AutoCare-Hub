@@ -16,6 +16,7 @@ interface InvoiceViewModalProps {
   vehicle: Vehicle | null;
   service: ServiceJob | null;
   onOpenRecordPayment: (invoiceNumber: string) => void;
+  readOnly?: boolean;
 }
 
 export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
@@ -26,6 +27,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
   vehicle,
   service,
   onOpenRecordPayment,
+  readOnly = false,
 }) => {
   if (!invoice) return null;
 
@@ -52,7 +54,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            {isPending && (
+            {isPending && !readOnly && (
               <button
                 onClick={() => {
                   onClose();

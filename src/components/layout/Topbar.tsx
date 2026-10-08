@@ -28,7 +28,7 @@ export const Topbar: React.FC<TopbarProps> = ({
   onOpenNewVehicle,
   onOpenRecordPayment,
 }) => {
-  const { notifications, bays, setIsGlobalSearchOpen, setActiveTab, isBackendOnline } = useWorkshop();
+  const { notifications, bays, setIsGlobalSearchOpen, setActiveTab, isBackendOnline, isDemoReadOnly } = useWorkshop();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
 
@@ -60,7 +60,7 @@ export const Topbar: React.FC<TopbarProps> = ({
           </span>
           <span className="text-slate-400">•</span>
           <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${isBackendOnline ? 'bg-emerald-100 text-slate-700' : 'bg-amber-100 text-slate-700'}`}>
-            {isBackendOnline ? 'SQLite Live' : 'Offline Cache'}
+            {isBackendOnline ? 'API Connected' : 'API Offline'}
           </span>
         </div>
       </div>
@@ -85,6 +85,7 @@ export const Topbar: React.FC<TopbarProps> = ({
       {/* Right: Quick Action & Notifications */}
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Quick Action Dropdown */}
+        {!isDemoReadOnly && (
         <div className="relative">
           <button
             onClick={() => setIsQuickActionOpen(!isQuickActionOpen)}
@@ -151,6 +152,7 @@ export const Topbar: React.FC<TopbarProps> = ({
             </>
           )}
         </div>
+        )}
 
         {/* Notifications Icon Button */}
         <div className="relative">

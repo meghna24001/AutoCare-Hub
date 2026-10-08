@@ -52,6 +52,7 @@ export const ServiceJobTable: React.FC<ServiceJobTableProps> = ({
     updateService,
     updateServiceStatus,
     deleteService,
+    isDemoReadOnly,
   } = useWorkshop();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -127,13 +128,13 @@ export const ServiceJobTable: React.FC<ServiceJobTableProps> = ({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button
+          {!isDemoReadOnly && <button
             onClick={() => setIsAddModalOpen(true)}
             className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-sm shadow-sky-600/20 transition-all flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             <span>Create Service Job</span>
-          </button>
+          </button>}
         </div>
       </div>
 
@@ -290,7 +291,7 @@ export const ServiceJobTable: React.FC<ServiceJobTableProps> = ({
 
                         {/* Status (Inline Selector) */}
                         <td className="py-3.5 px-4">
-                          <select
+                          {!isDemoReadOnly ? <select
                             value={job.status}
                             onChange={e => updateServiceStatus(job.serviceID, e.target.value as ServiceStatus)}
                             className="text-xs font-semibold rounded-lg border border-slate-200 bg-white py-1 px-2 text-slate-800 focus:ring-1 focus:ring-sky-500 outline-none cursor-pointer"
@@ -300,7 +301,7 @@ export const ServiceJobTable: React.FC<ServiceJobTableProps> = ({
                                 {s}
                               </option>
                             ))}
-                          </select>
+                          </select> : <StatusBadge status={job.status} size="sm" />}
                         </td>
 
                         {/* Total Amount (Labour + Parts) */}
@@ -318,13 +319,13 @@ export const ServiceJobTable: React.FC<ServiceJobTableProps> = ({
                             >
                               <Eye className="w-4 h-4" />
                             </button>
-                            <button
+                            {!isDemoReadOnly && <button
                               onClick={() => setEditingService(job)}
                               className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                               title="Edit Service Details / Charges"
                             >
                               <Edit2 className="w-4 h-4" />
-                            </button>
+                            </button>}
                             <button
                               onClick={() => onViewInvoice(job.serviceID)}
                               className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
@@ -332,13 +333,13 @@ export const ServiceJobTable: React.FC<ServiceJobTableProps> = ({
                             >
                               <Receipt className="w-4 h-4" />
                             </button>
-                            <button
+                            {!isDemoReadOnly && <button
                               onClick={() => setDeletingService(job)}
                               className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                               title="Delete Service Record"
                             >
                               <Trash2 className="w-4 h-4" />
-                            </button>
+                            </button>}
                           </div>
                         </td>
                       </tr>
@@ -420,7 +421,7 @@ export const ServiceJobTable: React.FC<ServiceJobTableProps> = ({
 
       {/* Create New Job Modal */}
       <ServiceJobFormModal
-        isOpen={isAddModalOpen}
+        isOpen={isAddModalOpen && !isDemoReadOnly}
         onClose={() => setIsAddModalOpen(false)}
         customers={customers}
         vehicles={vehicles}
@@ -432,7 +433,7 @@ export const ServiceJobTable: React.FC<ServiceJobTableProps> = ({
 
       {/* Edit Job Modal */}
       <ServiceJobFormModal
-        isOpen={!!editingService}
+        isOpen={!!editingService && !isDemoReadOnly}
         onClose={() => setEditingService(null)}
         customers={customers}
         vehicles={vehicles}
@@ -456,11 +457,12 @@ export const ServiceJobTable: React.FC<ServiceJobTableProps> = ({
         onViewInvoice={onViewInvoice}
         onEditService={s => setEditingService(s)}
         onDeleteService={s => setDeletingService(s)}
+        readOnly={isDemoReadOnly}
       />
 
       {/* Confirm Delete Dialog */}
       <ConfirmDialog
-        isOpen={!!deletingService}
+        isOpen={!!deletingService && !isDemoReadOnly}
         onClose={() => setDeletingService(null)}
         onConfirm={handleDeleteConfirm}
         title="Delete Service Record"

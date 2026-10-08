@@ -21,7 +21,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const { activeTab, setActiveTab, services, vehicles, resetToDemoData } = useWorkshop();
+  const { activeTab, setActiveTab, services, vehicles, resetToDemoData, isDemoReadOnly } = useWorkshop();
 
   const activeJobsCount = services.filter(
     s => !['Completed', 'Delivered'].includes(s.status)
@@ -84,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <div className="flex items-center gap-1.5">
                 <span className="text-base font-bold text-white tracking-tight">AutoCare Hub</span>
                 <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-400 border border-sky-500/30">
-                  PRO
+                  DEMO
                 </span>
               </div>
               <p className="text-xs text-slate-400">Workshop OS • v1.0</p>
@@ -139,7 +139,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             System
           </div>
 
-          <button
+          {!isDemoReadOnly && <button
             onClick={() => handleNavClick('settings')}
             className={`w-full justify-start ${
               activeTab === 'settings'
@@ -149,10 +149,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           >
             <Settings className="w-4 h-4 text-slate-400" />
             <span>Settings & Backup</span>
-          </button>
+          </button>}
 
           {/* Quick Demo Reset */}
-          <button
+          {!isDemoReadOnly && <button
             onClick={() => {
               if (window.confirm('Reset all workshop records back to original demo data?')) {
                 resetToDemoData();
@@ -162,7 +162,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           >
             <RotateCcw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
             <span>Restore Demo Records</span>
-          </button>
+          </button>}
         </div>
 
         {/* Bottom Profile / Workshop Card */}
@@ -173,7 +173,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-white truncate">Arun Mehta</p>
-              <p className="text-xs text-slate-400 truncate">Service Manager • Apex Motors</p>
+              <p className="text-xs text-slate-400 truncate">Portfolio demo workspace</p>
             </div>
             <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="Online" />
           </div>

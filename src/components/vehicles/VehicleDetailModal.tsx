@@ -24,6 +24,7 @@ interface VehicleDetailModalProps {
   onSelectJob: (serviceId: number) => void;
   onSelectCustomer: (customerId: number) => void;
   onEditVehicle: (vehicle: Vehicle) => void;
+  readOnly?: boolean;
 }
 
 export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
@@ -36,6 +37,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
   onSelectJob,
   onSelectCustomer,
   onEditVehicle,
+  readOnly = false,
 }) => {
   if (!vehicle) return null;
 
@@ -94,7 +96,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
           </div>
 
           <div className="flex flex-row md:flex-col gap-2 shrink-0">
-            <button
+            {!readOnly && <button
               onClick={() => {
                 onClose();
                 onAddJob(vehicle.customerID, vehicle.vehicleID);
@@ -103,8 +105,8 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
             >
               <Plus className="w-4 h-4" />
               <span>Create Service Job</span>
-            </button>
-            <button
+            </button>}
+            {!readOnly && <button
               onClick={() => {
                 onClose();
                 onEditVehicle(vehicle);
@@ -112,7 +114,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
               className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition-all text-center"
             >
               Edit Vehicle
-            </button>
+            </button>}
           </div>
         </div>
 

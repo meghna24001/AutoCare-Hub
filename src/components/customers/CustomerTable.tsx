@@ -28,7 +28,7 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
   onSelectVehicle,
   onSelectJob,
 }) => {
-  const { customers, vehicles, services, addCustomer, updateCustomer, deleteCustomer } = useWorkshop();
+  const { customers, vehicles, services, addCustomer, updateCustomer, deleteCustomer, isDemoReadOnly } = useWorkshop();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMode, setFilterMode] = useState<'all' | 'with_vehicles' | 'active_jobs'>('all');
@@ -81,13 +81,13 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button
+          {!isDemoReadOnly && <button
             onClick={() => setIsAddModalOpen(true)}
             className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-sm shadow-sky-600/20 transition-all flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             <span>Add Customer</span>
-          </button>
+          </button>}
         </div>
       </div>
 
@@ -229,20 +229,20 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
                           >
                             <Eye className="w-4 h-4" />
                           </button>
-                          <button
+                          {!isDemoReadOnly && <button
                             onClick={() => setEditingCustomer(customer)}
                             className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                             title="Edit Customer"
                           >
                             <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
+                          </button>}
+                          {!isDemoReadOnly && <button
                             onClick={() => setDeletingCustomer(customer)}
                             className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                             title="Delete Customer"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </button>}
                         </div>
                       </td>
                     </tr>
@@ -256,14 +256,14 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
 
       {/* Add Customer Modal */}
       <CustomerFormModal
-        isOpen={isAddModalOpen}
+        isOpen={isAddModalOpen && !isDemoReadOnly}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={addCustomer}
       />
 
       {/* Edit Customer Modal */}
       <CustomerFormModal
-        isOpen={!!editingCustomer}
+        isOpen={!!editingCustomer && !isDemoReadOnly}
         onClose={() => setEditingCustomer(null)}
         initialData={editingCustomer}
         onSubmit={async data => {
@@ -284,11 +284,12 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
         onSelectVehicle={onSelectVehicle}
         onSelectJob={onSelectJob}
         onEditCustomer={c => setEditingCustomer(c)}
+        readOnly={isDemoReadOnly}
       />
 
       {/* Confirm Delete Dialog */}
       <ConfirmDialog
-        isOpen={!!deletingCustomer}
+        isOpen={!!deletingCustomer && !isDemoReadOnly}
         onClose={() => setDeletingCustomer(null)}
         onConfirm={handleDeleteConfirm}
         title="Delete Customer Record"

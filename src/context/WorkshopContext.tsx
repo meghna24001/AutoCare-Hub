@@ -25,6 +25,7 @@ import { isValidMobileNumber, isValidAmount } from '../utils/validators';
 import { apiService } from '../services/dataService';
 
 interface WorkshopContextType {
+  isDemoReadOnly: boolean;
   // State
   customers: Customer[];
   vehicles: Vehicle[];
@@ -88,6 +89,7 @@ interface WorkshopContextType {
 const WorkshopContext = createContext<WorkshopContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'autocare_hub_state_v1';
+const isDemoReadOnly = import.meta.env.VITE_DEMO_READ_ONLY === 'true';
 
 // ─── Helper: add a new activity entry ───────────────────────────────────────
 function makeActivity(
@@ -627,6 +629,7 @@ export const WorkshopProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   return (
     <WorkshopContext.Provider
       value={{
+        isDemoReadOnly,
         customers, vehicles, services, mechanics, invoices, bays,
         notifications, activities, activeTab, setActiveTab,
         isGlobalSearchOpen, setIsGlobalSearchOpen,
