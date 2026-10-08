@@ -141,10 +141,10 @@ The backend provides a RESTful API powered by **Node.js and Express**:
 
 1. Create a Supabase project and copy its PostgreSQL connection string from **Project Settings → Database**. Use the session pooler connection string if the hosting provider cannot connect over IPv6.
 2. In Render, create a new Blueprint from this GitHub repository and select the included `render.yaml`.
-3. Set Render's `DATABASE_URL` to the Supabase connection string as a secret environment variable. The Blueprint enables `DEMO_READ_ONLY` for the API and `VITE_DEMO_READ_ONLY` for the frontend.
+3. Set Render's `DATABASE_URL` to the Supabase connection string as a secret environment variable. The Blueprint keeps API writes disabled with `DEMO_READ_ONLY` and serves the frontend in an interactive browser-local sandbox with `VITE_DEMO_SANDBOX`.
 4. Deploy. The Express service serves both the built frontend and `/api` routes from the same HTTPS origin.
 
-The hosted portfolio demo is public and read-only: GET requests are available for exploring the app, while API writes are rejected. Its records are fictional sample data; never enter real customer, vehicle, or payment information. If configuring Render manually instead of using the Blueprint, set both `DEMO_READ_ONLY=true` and `VITE_DEMO_READ_ONLY=true` before deploying. The included Render configuration targets its free web-service tier; free services may sleep while idle. Supabase free projects may also have inactivity limits, quotas, or plan changes. This portfolio project is not a production system.
+The hosted portfolio demo is public and interactive. Visitors can try the workshop workflows, but changes are saved in that browser's local storage and are never sent to the shared database. The server's `DEMO_READ_ONLY=true` setting continues to reject API writes as a second safeguard. The frontend uses `VITE_DEMO_SANDBOX=true` to use isolated fictional records and enable the local sandbox; `VITE_DEMO_READ_ONLY=true` is overridden in this mode. Visitors can use **Restore Demo Records** to reset their browser's sample data. Never enter real customer, vehicle, or payment information. The included Render configuration targets its free web-service tier; free services may sleep while idle. Supabase free projects may also have inactivity limits, quotas, or plan changes. This portfolio project is not a production system.
 
 ### REST API Endpoints
 

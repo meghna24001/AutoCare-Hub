@@ -12,5 +12,7 @@ services:
         value: "true"
       - key: VITE_DEMO_READ_ONLY
         value: "true"
+      - key: VITE_DEMO_SANDBOX
+        value: "true"
       - key: DATABASE_URL
         sync: false

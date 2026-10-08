@@ -25,6 +25,7 @@ import { isValidMobileNumber, isValidAmount } from '../utils/validators';
 import { apiService } from '../services/dataService';
 
 interface WorkshopContextType {
+  isDemoSandbox: boolean;
   isDemoReadOnly: boolean;
   // State
   customers: Customer[];
@@ -88,8 +89,9 @@ interface WorkshopContextType {
 
 const WorkshopContext = createContext<WorkshopContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'autocare_hub_state_v1';
-const isDemoReadOnly = import.meta.env.VITE_DEMO_READ_ONLY === 'true';
+const isDemoSandbox = import.meta.env.VITE_DEMO_SANDBOX === 'true';
+const STORAGE_KEY = isDemoSandbox ? 'autocare_hub_sandbox_v1' : 'autocare_hub_state_v1';
+const isDemoReadOnly = import.meta.env.VITE_DEMO_READ_ONLY === 'true' && !isDemoSandbox;
 
 // ─── Helper: add a new activity entry ───────────────────────────────────────
 function makeActivity(
@@ -187,9 +189,40 @@ export const WorkshopProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem(`${STORAGE_KEY}_activities`, JSON.stringify(activities));
   }, [activities]);
 
+  useEffect(() => {
+    if (!isDemoSandbox || isLoading) return;
+    localStorage.setItem(`${STORAGE_KEY}_customers`, JSON.stringify(customers));
+  }, [customers, isLoading]);
+  useEffect(() => {
+    if (!isDemoSandbox || isLoading) return;
+    localStorage.setItem(`${STORAGE_KEY}_vehicles`, JSON.stringify(vehicles));
+  }, [vehicles, isLoading]);
+  useEffect(() => {
+    if (!isDemoSandbox || isLoading) return;
+    localStorage.setItem(`${STORAGE_KEY}_services`, JSON.stringify(services));
+  }, [services, isLoading]);
+  useEffect(() => {
+    if (!isDemoSandbox || isLoading) return;
+    localStorage.setItem(`${STORAGE_KEY}_mechanics`, JSON.stringify(mechanics));
+  }, [mechanics, isLoading]);
+  useEffect(() => {
+    if (!isDemoSandbox || isLoading) return;
+    localStorage.setItem(`${STORAGE_KEY}_invoices`, JSON.stringify(invoices));
+  }, [invoices, isLoading]);
+  useEffect(() => {
+    if (!isDemoSandbox || isLoading) return;
+    localStorage.setItem(`${STORAGE_KEY}_bays`, JSON.stringify(bays));
+  }, [bays, isLoading]);
+
   // ── Fetch all data from API ──────────────────────────────────────────────
   const loadFromAPI = useCallback(async () => {
     try {
+      if (isDemoSandbox) {
+        setIsBackendOnline(false);
+        loadFromLocalStorage();
+        return;
+      }
+
       const online = await apiService.checkHealth();
       setIsBackendOnline(online);
 
@@ -460,11 +493,42 @@ export const WorkshopProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return { success: false, message: 'Charges cannot be negative.' };
 
     const id = data.serviceID || (services.length > 0 ? Math.max(...services.map(s => s.serviceID)) + 1 : 501);
-    const totalBill = Number(data.labourCharges) + Number(data.sparePartsCost);
+    const labourCharges = Number(data.labourCharges);
+    const sparePartsCost = Number(data.sparePartsCost);
+    const discount = Number(data.discount) || 0;
+    const tax = Number(data.tax) || 0;
+    const totalBill = labourCharges + sparePartsCost - discount + tax;
     const newService: ServiceJob = { ...data, serviceID: id, totalBillAmount: totalBill, serviceDate: data.serviceDate || new Date().toISOString().split('T')[0], status: data.status || 'Checked In', priority: data.priority || 'Normal', checklist: data.checklist || [] };
     setServices(prev => [newService, ...prev]);
     setVehicles(prev => prev.map(v => v.vehicleID === data.vehicleID ? { ...v, status: 'In Service', serviceCount: (v.serviceCount || 0) + 1 } : v));
+    const invoiceNumber = `INV-${new Date().getFullYear()}-${String(id).padStart(4, '0')}`;
+    setInvoices(prev => [{
+      invoiceNumber,
+      serviceID: id,
+      customerID: data.customerID,
+      vehicleID: data.vehicleID,
+      invoiceDate: newService.serviceDate,
+      dueDate: data.expectedDeliveryDate || newService.serviceDate,
+      labourCharges,
+      sparePartsCost,
+      subtotal: labourCharges + sparePartsCost,
+      discount,
+      taxAmount: tax,
+      totalAmount: totalBill,
+      paidAmount: 0,
+      paymentStatus: 'Pending',
+      notes: data.notes || `Service job #${id}`,
+    }, ...prev]);
+    if (data.bayId) {
+      setBays(prev => prev.map(bay => bay.bayId === data.bayId
+        ? { ...bay, status: 'Occupied', currentVehicleId: data.vehicleID, currentServiceId: id, assignedMechanicId: data.mechanicID, occupiedSince: 'Just now' }
+        : bay));
+    }
+    setMechanics(prev => prev.map(mechanic => mechanic.mechanicID === data.mechanicID
+      ? { ...mechanic, status: 'Busy', activeJobsCount: mechanic.activeJobsCount + 1 }
+      : mechanic));
     setActivities(prev => [makeActivity('New Service Job Created', `#${id}: ${data.serviceType} for ${vehicle.registrationNumber}`, 'service', id), ...prev.slice(0, 19)]);
+    setNotifications(prev => [makeNotification('Service Job Created', `Job #${id} scheduled for ${vehicle.registrationNumber}.`, 'info', 'jobs'), ...prev]);
     return { success: true, message: 'Service recorded successfully!', service: newService };
   };
 
@@ -486,14 +550,32 @@ export const WorkshopProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
     }
 
-    const totalBill = labour + parts;
-    setServices(prev => prev.map(s => s.serviceID === id ? { ...s, ...data, labourCharges: labour, sparePartsCost: parts, totalBillAmount: totalBill } : s));
+    const discount = data.discount !== undefined ? Number(data.discount) : existing.discount || 0;
+    const tax = data.tax !== undefined
+      ? Number(data.tax)
+      : Math.round(Math.max(0, labour + parts - discount) * 0.18);
+    const subtotal = labour + parts;
+    const totalBill = Math.max(0, subtotal - discount + tax);
+    setServices(prev => prev.map(s => s.serviceID === id ? {
+      ...s,
+      ...data,
+      labourCharges: labour,
+      sparePartsCost: parts,
+      discount,
+      tax,
+      totalBillAmount: totalBill,
+    } : s));
     setInvoices(prev => prev.map(inv => {
       if (inv.serviceID !== id) return inv;
-      const disc = data.discount !== undefined ? data.discount : inv.discount;
-      const tax = Math.round((totalBill - disc) * 0.18);
-      const grandTotal = Math.round((totalBill - disc) * 1.18);
-      return { ...inv, labourCharges: labour, sparePartsCost: parts, subtotal: totalBill, discount: disc, taxAmount: tax, totalAmount: grandTotal };
+      return {
+        ...inv,
+        labourCharges: labour,
+        sparePartsCost: parts,
+        subtotal,
+        discount,
+        taxAmount: tax,
+        totalAmount: totalBill,
+      };
     }));
     return { success: true, message: 'Service record updated successfully!' };
   };
@@ -629,6 +711,7 @@ export const WorkshopProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   return (
     <WorkshopContext.Provider
       value={{
+        isDemoSandbox,
         isDemoReadOnly,
         customers, vehicles, services, mechanics, invoices, bays,
         notifications, activities, activeTab, setActiveTab,

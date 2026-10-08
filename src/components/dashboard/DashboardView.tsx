@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import { KPISection } from './KPISection';
 import { ReadyForPickupCard } from './ReadyForPickupCard';
 import { TodayJobsTable } from './TodayJobsTable';
 import { RevenueChart } from './RevenueChart';
 import { RecentActivityFeed } from './RecentActivityFeed';
+
+function getTimeGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
 
 interface DashboardViewProps {
   onViewJob: (id: number) => void;
@@ -21,6 +28,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onDeliverService,
   onSelectTab,
 }) => {
+  const [greeting, setGreeting] = useState(getTimeGreeting);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setGreeting(getTimeGreeting()), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
@@ -31,7 +45,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <span>Workshop operations control</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-            Good morning, Apex Motors
+            {greeting}, Apex Motors
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
             Here's what's happening at your service centre today. All bays are monitored and active jobs are synchronized.

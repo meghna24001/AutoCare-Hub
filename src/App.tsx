@@ -50,6 +50,7 @@ const MainLayout: React.FC = () => {
     updateServiceStatus,
     recordPayment,
     isLoading,
+    isDemoSandbox,
     isDemoReadOnly,
   } = useWorkshop();
 
@@ -162,9 +163,9 @@ const MainLayout: React.FC = () => {
           }}
         />
 
-        {isDemoReadOnly && (
+        {isDemoSandbox && (
           <div className="mx-4 mt-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 sm:mx-6 lg:mx-8" role="note">
-            <strong>Portfolio demo:</strong> fictional sample records only. This site is read-only; changes are disabled and are not saved.
+            <strong>Interactive portfolio sandbox:</strong> Try creating and updating customers, vehicles, service jobs, payments, and bays. Changes are saved only in this browser and do not affect other visitors. Choose <strong>Restore Demo Records</strong> in the sidebar to start over. Use fictional information only.
           </div>
         )}
 
