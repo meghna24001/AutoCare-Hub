@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import path from 'path';
 import { initializeAndSeedDatabase } from './db/seed.js';
 import { customerRouter } from './routes/customerRoutes.js';
 import { vehicleRouter } from './routes/vehicleRoutes.js';
@@ -25,7 +26,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
     version: '2.0.0',
     timestamp: new Date().toISOString(),
     uptimeSeconds: Math.floor(process.uptime()),
-    database: 'SQLite (Zero-Cost Local)',
+    database: process.env.DATABASE_URL ? 'PostgreSQL' : 'SQLite',
   });
 });
 
@@ -37,6 +38,17 @@ app.use('/api/mechanics', mechanicRouter);
 app.use('/api/bays', bayRouter);
 app.use('/api/invoices', invoiceRouter);
 app.use('/api/reports', reportRouter);
+
+const clientBuildPath = path.resolve(process.cwd(), 'dist');
+app.use(express.static(clientBuildPath));
+app.use('/api', (_req: Request, res: Response) => {
+  res.status(404).json({ success: false, message: 'API endpoint not found.' });
+});
+app.get(/^(?!\/api(?:\/|$)).*/, (_req: Request, res: Response, next) => {
+  res.sendFile(path.join(clientBuildPath, 'index.html'), (err) => {
+    if (err) next(err);
+  });
+});
 
 // Global Error Handler
 app.use((err: any, _req: Request, res: Response, _next: any) => {

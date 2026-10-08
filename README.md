@@ -77,6 +77,7 @@ This project preserves the fundamental data structures and business integrity ch
 | **Styling** | **Tailwind CSS** | Custom automotive dark navy and slate design system |
 | **Icons** | **Lucide React** | Consistent automotive and UI iconography |
 | **State & Storage** | **React Context + LocalStorage** | Full state persistence with 1-click JSON backup export |
+| **Hosted Database** | **PostgreSQL (optional)** | Persistent managed storage when `DATABASE_URL` is configured |
 | **Build Tool** | **Vite 6** | Ultra-fast HMR and optimized production bundles |
 | **Foundation** | **C++ 17** | Classical data structure algorithms and validation rules |
 
@@ -127,13 +128,23 @@ This project preserves the fundamental data structures and business integrity ch
 
 ---
 
-## 🛠️ Backend Architecture (100% Free / Zero-Cost)
+## 🛠️ Backend Architecture
 
-The backend provides a high-performance RESTful API powered by **Node.js, Express, and SQLite**:
+The backend provides a RESTful API powered by **Node.js and Express**:
 
-- **Database**: Local embedded file at `server/data/autocare.db` (auto-seeded on initial boot). No monthly bills, no credit cards, zero cloud hosting fees.
+- **Local development**: SQLite database at `server/data/autocare.db` (auto-seeded on initial boot).
+- **Hosted deployment**: Set `DATABASE_URL` to a managed PostgreSQL connection string; the service creates its schema and seeds demo records on first boot.
 - **Data Integrity**: Enforces foreign key constraints and C++ rules directly in database queries and route controllers.
 - **Seamless Resilience**: Frontend features graceful fallback — if the backend is offline, the app switches to local cache automatically without crashing.
+
+### Deploying to Render with Supabase
+
+1. Create a Supabase project and copy its PostgreSQL connection string from **Project Settings → Database**. Use the session pooler connection string if the hosting provider cannot connect over IPv6.
+2. In Render, create a new Blueprint from this GitHub repository and select the included `render.yaml`.
+3. Set the Render service's `DATABASE_URL` environment variable to the Supabase connection string. Keep this value private; never commit it or put it in frontend variables.
+4. Deploy. The Express service serves both the built frontend and `/api` routes from the same HTTPS origin.
+
+The included Render configuration targets its free web-service tier; free services may sleep while idle. Supabase free projects may also have inactivity limits, quotas, or plan changes. This demo does not yet include user authentication or authorization, so do not enter real customer or payment information and do not treat it as a production system.
 
 ### REST API Endpoints
 
