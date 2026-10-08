@@ -1,4 +1,4 @@
-import sqlite3 from 'sqlite3';
+import type { RunResult } from 'sqlite3';
 import { Pool, types } from 'pg';
 import path from 'path';
 import fs from 'fs';
@@ -30,13 +30,14 @@ if (postgresPool) {
   console.log(`Using local SQLite database at: ${dbPath}`);
 }
 
-const db = postgresPool ? null : new sqlite3.Database(dbPath, (err) => {
+const sqlite3 = postgresPool ? null : (await import('sqlite3')).default;
+const db = sqlite3 ? new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Error connecting to SQLite database:', err.message);
   } else {
     console.log(`Connected to local SQLite database at: ${dbPath}`);
   }
-});
+}) : null;
 
 db?.run('PRAGMA foreign_keys = ON;');
 
@@ -113,7 +114,7 @@ export function executeRun(sql: string, params: any[] = []): Promise<{ lastID: n
   }
 
   return new Promise((resolve, reject) => {
-    db!.run(sql, params, function (this: sqlite3.RunResult, err: Error | null) {
+    db!.run(sql, params, function (this: RunResult, err: Error | null) {
       if (err) reject(err);
       else resolve({ lastID: this.lastID, changes: this.changes });
     });
